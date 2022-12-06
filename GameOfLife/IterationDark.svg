@@ -1,0 +1,35 @@
+<svg fill="none" viewBox="0 0 345 20" width="345px" height="20px"
+  xmlns="http://www.w3.org/2000/svg">
+  <foreignObject width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <style>
+
+        .wrapper {
+            text-align: center;
+            width: 345px;
+            height: 20px
+        }
+
+        h1 {
+			background: #d83a7d;
+            color: #fff;
+            font-size: 10px;
+            position: center;
+            font-weight: 500;
+            font-family: "Josefin Sans", sans-serif;
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+      </style>
+
+        <div class="wrapper">
+          <h1>Current Iteration: 0</h1>
+        </div>
+
+    </div>
+  </foreignObject>
+</svg>
