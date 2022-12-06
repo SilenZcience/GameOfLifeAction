@@ -38,6 +38,49 @@ target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
+
+def IterationImageContent(r, g, b, *args):
+    hexColor = '#{:02x}{:02x}{:02x}'.format(r, g, b)
+    IterationImageContent = '''
+    <svg fill="none" viewBox="0 0 345 20" width="345px" height="20px"
+    xmlns="http://www.w3.org/2000/svg">
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+        <style>
+
+            .wrapper {
+                text-align: center;
+                width: 345px;
+                height: 20px
+            }
+
+            h1 {
+                background: ''' + hexColor + ''';
+                color: #fff;
+                font-size: 10px;
+                position: center;
+                font-weight: 500;
+                font-family: "Josefin Sans", sans-serif;
+                background-size: 200% auto;
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                display: inline-block;
+            }
+
+        </style>
+
+            <div class="wrapper">
+            <h1>Current Iteration: 0</h1>
+            </div>
+
+        </div>
+    </foreignObject>
+    </svg>
+    '''
+    return IterationImageContent 
+
+
 def updateGame(cells):
     """Calculate the next cycle of cells, aswell
     as the cycle after that, to flag the cells,
@@ -150,8 +193,10 @@ def startNewGame(target_image, dark):
     image.save(target_image)
 
 
-def updateIteration(imageFile, increment):
+def updateIteration(imageFile, dark, increment):
     if not os.path.exists(imageFile):
+        with open(imageFile, 'w', encoding="utf-8") as image:
+            image.write(IterationImageContent(*color_alive[dark]))
         return
     fileContent = headerContent = ""
     currentIteration = 0
@@ -188,13 +233,13 @@ def main():
             image = generateImage(cells, i)
             if np.array_equal(currentImage, image):
                 startNewGame(target_image, i)
-                updateIteration(target_iteration_images[i], False)
+                updateIteration(target_iteration_images[i], i, False)
             else:
                 image.save(target_image)
-                updateIteration(target_iteration_images[i], True)
+                updateIteration(target_iteration_images[i], i, True)
         else:
             startNewGame(target_image, i)
-            updateIteration(target_iteration_images[i], False)
+            updateIteration(target_iteration_images[i], i, False)
 
 
 if __name__ == '__main__':
