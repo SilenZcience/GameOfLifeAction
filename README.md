@@ -64,14 +64,14 @@ Choose a folder(-structure), or create a new one, in which the Game-of-Life imag
 Within your ``README.md`` add the following element:
 ```console
 <p align="center">
-	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/GameOfLifeDark.png">
-		<img width="98.6%" alt="Game of Life" src="./<folder>/GameOfLifeBright.png">
-	</picture>
-	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/IterationDark.svg">
-		<img width="98.6%" alt="Game of Life" src="./<folder>/IterationBright.svg">
-	</picture>
+  <picture>
+    <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/GameOfLifeDark.png">
+    <img width="98.6%" alt="Game of Life" src="./<folder>/GameOfLifeBright.png">
+  </picture>
+  <picture>
+    <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/IterationDark.svg">
+    <img width="98.6%" alt="Game of Life" src="./<folder>/IterationBright.svg">
+  </picture>
 </p>
 ```
 

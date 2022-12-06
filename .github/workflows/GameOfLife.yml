@@ -1,0 +1,39 @@
+name: Update GameOfLife
+
+on:
+  schedule:
+    - cron: '0 12 */3 * *'
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: main
+      - name: Checkout GameOfLifeAction - Repo
+        uses: actions/checkout@v3
+        with:
+          repository: SilenZcience/GameOfLifeAction
+          path: GameOfLifeAction
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Setup Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ./GameOfLifeAction/GameOfLife/requirements.txt
+      - name: Run Script
+        run: |
+          python ./GameOfLifeAction/GameOfLife/GameOfLife.py "./main/GameOfLife"
+      - name: Push
+        run: |
+          cd ./main/
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "🤖Update GameOfLife"
+          git push origin main
