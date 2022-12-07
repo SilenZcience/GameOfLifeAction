@@ -2,14 +2,13 @@ import os
 import numpy as np
 from PIL import Image
 from ArgParser import parseArgs
-
+from IterationUpdater import updateIteration
 
 def tracelog(*args):
     print("TraceLog:", *args)
 
 
 workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid = parseArgs()
-
 
 cell_size = [canvas_size[0]/cell_grid[0],
              canvas_size[1]/cell_grid[1]]
@@ -23,48 +22,6 @@ target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
                  os.path.join(workingDir, 'GameOfLifeDark.png')]
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
-
-
-def IterationImageContent(r, g, b, *args):
-    hexColor = '#{:02x}{:02x}{:02x}'.format(r, g, b)
-    IterationImageContent = '''
-    <svg fill="none" viewBox="0 0 345 20" width="345px" height="20px"
-    xmlns="http://www.w3.org/2000/svg">
-    <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml">
-        <style>
-
-            .wrapper {
-                text-align: center;
-                width: 345px;
-                height: 20px
-            }
-
-            h1 {
-                background: ''' + hexColor + ''';
-                color: #fff;
-                font-size: 10px;
-                position: center;
-                font-weight: 500;
-                font-family: "Josefin Sans", sans-serif;
-                background-size: 200% auto;
-                background-clip: text;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                display: inline-block;
-            }
-
-        </style>
-
-            <div class="wrapper">
-            <h1>Current Iteration: 0</h1>
-            </div>
-
-        </div>
-    </foreignObject>
-    </svg>
-    '''
-    return IterationImageContent
 
 
 def updateGame(cells):
@@ -177,38 +134,6 @@ def startNewGame(target_image, dark):
     image.save(target_image)
 
 
-def updateIteration(imageFile, dark, increment):
-    if not os.path.exists(imageFile):
-        with open(imageFile, 'w', encoding="utf-8") as image:
-            image.write(IterationImageContent(*color_alive[dark]))
-        return
-    fileContent = headerContent = ""
-    currentIteration = 0
-    try:
-        with open(imageFile, 'r', encoding="utf-8") as image:
-            fileContent = image.read()
-            headerContent = fileContent[fileContent.find("<h1>") + 4:fileContent.find("</h1>")]
-    except:
-        return
-
-    newHeaderContent = ""
-    if increment:
-        headerIteration = ""
-        for char in headerContent[::-1]:
-            if not char.isnumeric():
-                break
-            headerIteration += char
-        currentIteration = int(headerIteration[::-1]) + 1
-
-    newHeaderContent = "Current Iteration: {}".format(currentIteration)
-
-    try:
-        with open(imageFile, 'w', encoding="utf-8") as image:
-            image.write(fileContent.replace(headerContent, newHeaderContent))
-    except:
-        return
-
-
 def main():
     for i, target_image in enumerate(target_images):
         if os.path.exists(target_image):
@@ -224,23 +149,23 @@ def main():
                     tracelog("starting over...")
                     startNewGame(target_image, i)
                     tracelog("resetting index counter...")
-                    updateIteration(target_iteration_images[i], i, False)
+                    updateIteration(target_iteration_images[i], color_alive[i], False)
                 else:
                     tracelog("saving image...")
                     image.save(target_image)
                     tracelog("updating index counter...")
-                    updateIteration(target_iteration_images[i], i, True)
+                    updateIteration(target_iteration_images[i], color_alive[i], True)
             except Exception as e:
                 tracelog("an error occured:", e)
                 tracelog("restarting...")
                 startNewGame(target_image, i)
                 tracelog("resetting index counter...")
-                updateIteration(target_iteration_images[i], i, False)
+                updateIteration(target_iteration_images[i], color_alive[i], False)
         else:
             tracelog("starting new game...")
             startNewGame(target_image, i)
             tracelog("generating index counter...")
-            updateIteration(target_iteration_images[i], i, False)
+            updateIteration(target_iteration_images[i], color_alive[i], False)
 
 
 if __name__ == '__main__':
