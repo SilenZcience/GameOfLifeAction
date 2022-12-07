@@ -83,7 +83,20 @@ on:
   schedule:
     - cron: '0 12 */3 * *'
   workflow_dispatch:
-    
+
+env:
+  PATH_STRUC: '<folder>'
+  COLOR_DEAD_DARK: '#141321FF'
+  COLOR_DYING_DARK: '#F7D747FF'
+  COLOR_ALIVE_DARK: '#D83A7DFF'
+  COLOR_DEAD_LIGHT: '#FFFEFEFF'
+  COLOR_DYING_LIGHT: '#28394AFF'
+  COLOR_ALIVE_LIGHT: '#41B782FF'
+  CANVAS_HEIGHT: '420'
+  CANVAS_WIDTH: '1200'
+  CELL_AMOUNT_VERTICAL: '84'
+  CELL_AMOUNT_HORIZONTAL: '240'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -107,7 +120,7 @@ jobs:
           python -m pip install -r ./GameOfLifeAction/GameOfLife/requirements.txt
       - name: Run Script
         run: |
-          python ./GameOfLifeAction/GameOfLife/GameOfLife.py "./main/<folder>/"
+          python ./GameOfLifeAction/GameOfLife/GameOfLife.py -p "./main/$PATH_STRUC" -cdead $COLOR_DEAD_LIGHT,$COLOR_DEAD_DARK -cdying $COLOR_DYING_LIGHT,$COLOR_DYING_DARK -calive $COLOR_ALIVE_LIGHT,$COLOR_ALIVE_DARK -canvas $CANVAS_HEIGHT,$CANVAS_WIDTH -grid $CELL_AMOUNT_VERTICAL,$CELL_AMOUNT_HORIZONTAL
       - name: Push
         run: |
           cd ./main/
