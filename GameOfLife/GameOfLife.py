@@ -1,23 +1,73 @@
 import os
 import sys
+import argparse
 import numpy as np
 from PIL import Image
 from PIL.ImageColor import getcolor
 
-color_light_dead = "#FFFEFEFF"
-color_light_alive = "#41B782FF"
-color_light_dying = "#28394AFF"
 
-color_dark_dead = "#141321FF"
-color_dark_alive = "#D83A7DFF"
-color_dark_dying = "#F7D747FF"
+def tracelog(*args):
+    print("TraceLog:", *args)
 
-color_dead = [getcolor(color_light_dead, "RGBA"), getcolor(color_dark_dead, "RGBA")]
-color_alive = [getcolor(color_light_alive, "RGBA"), getcolor(color_dark_alive, "RGBA")]
-color_dying = [getcolor(color_light_dying, "RGBA"), getcolor(color_dark_dying, "RGBA")]
 
-canvas_size = (420, 1200)  # height, width
-cell_grid = (84, 240)
+def parseArgs():
+    parser = argparse.ArgumentParser(
+        description='Generate a Game-of-Life Image')
+
+    parser.add_argument("-p", "-path", action="store", default=[os.path.abspath(os.path.join(__file__,  '..'))],
+                        nargs=1, help="output folder", dest="path")
+    parser.add_argument("-cdead", action="store", default=["#FFFEFEFF,#141321FF"],
+                        nargs=1, help="the colors for dead cells, format: #light,#dark")
+    parser.add_argument("-cdying", action="store", default=["#28394AFF,#F7D747FF"],
+                        nargs=1, help="the colors for dying cells, format: #light,#dark")
+    parser.add_argument("-calive", action="store", default=["#41B782FF,#D83A7DFF"],
+                        nargs=1, help="the colors for alive cells, format: #light,#dark")
+    parser.add_argument("-canvas", action="store", default=["420,1200"],
+                        nargs=1, help="canvas size in pixel, format: height,width")
+    parser.add_argument("-grid", action="store", default=["84,240"],
+                        nargs=1, help="grid size in cells, format: vertical,horizontal")
+
+    param = parser.parse_args()
+    tracelog(param)
+    try:
+        path = os.path.abspath(getattr(param, "path")[0])
+    except:
+        tracelog("Invalid PATH! Please choose an existing folder.")
+        sys.exit(1)
+    if not os.path.exists(path):
+        tracelog("Invalid PATH! Please choose an existing folder.")
+        sys.exit(1)
+
+    cdead = cdying = calive = canvas = grid = ""
+    try:
+        cdead = getattr(param, "cdead")[0].split(',')
+        cdying = getattr(param, "cdying")[0].split(',')
+        calive = getattr(param, "calive")[0].split(',')
+        cdead = [*[getcolor(c, "RGBA") for c in cdead]]
+        cdying = [*[getcolor(c, "RGBA") for c in cdying]]
+        calive = [*[getcolor(c, "RGBA") for c in calive]]
+    except:
+        tracelog("The color parameters must be of the format: #light,#dark")
+        tracelog("e.g.: '#FFFEFEFF,#141321FF'")
+        sys.exit(1)
+    try:
+        canvas = tuple([int(pix) for pix in getattr(param, "canvas")[0].split(',')])
+    except:
+        tracelog("The canvas parameter must be of the format: height,width")
+        tracelog("e.g.: '420,1200'")
+        sys.exit(1)
+    try:
+        grid = tuple([int(pix) for pix in getattr(param, "grid")[0].split(',')])
+    except:
+        tracelog("The grid parameter must be of the format: vertical,horizontal")
+        tracelog("e.g.: '84,240'")
+        sys.exit(1)
+
+    return (path, cdead, cdying, calive, canvas, grid)
+
+
+workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid = parseArgs()
+
 
 cell_size = [canvas_size[0]/cell_grid[0],
              canvas_size[1]/cell_grid[1]]
@@ -26,12 +76,6 @@ for i, size in enumerate(cell_size):
         cell_size[i] += 1
     cell_size[i] = int(cell_size[i])
 
-workingDir = os.path.abspath(os.path.join(__file__,  '..'))
-if len(sys.argv) > 1:
-    try:
-        workingDir = os.path.abspath(sys.argv[1])
-    except:
-        pass
 
 target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
                  os.path.join(workingDir, 'GameOfLifeDark.png')]
@@ -78,7 +122,7 @@ def IterationImageContent(r, g, b, *args):
     </foreignObject>
     </svg>
     '''
-    return IterationImageContent 
+    return IterationImageContent
 
 
 def updateGame(cells):
@@ -125,8 +169,7 @@ def initRunningGame(imageFile, dark):
     image = Image.open(imageFile)
     currentColorArray = np.array(image)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
-    currentArray = np.zeros(
-        [currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.int8)
+    currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.int8)
 
     for row, col in np.ndindex(currentArray.shape):
         if np.array_equal(currentColorArray[row, col], color_dead[dark]):
@@ -141,25 +184,25 @@ def initRunningGame(imageFile, dark):
 
 def initNewGame():
     # testGame = np.zeros(cell_grid, dtype=np.int8) # Cell Grid should be >= 19x19
-    
+
     # Still-lifes
     # a[2:4,2:4] = 1 # Block
-    
+
     # a[1:2,2:4] = 1
     # a[2:3,1:2] = 1
     # a[2:3,4:5] = 1
     # a[3:4,2:4] = 1 # Bee-Hive
-    
+
     # Oscillators
     # a[2:4,2:4] = 1
     # a[3:4,1:2] = 1
     # a[2:3,4:5] = 1 # Toad
-    
+
     # a[2:5,2:3] = 1 # Blinker
-    
+
     # a[1:3,1:3] = 1
     # a[3:5,3:5] = 1 # Beacon
-    
+
     # a[2:3,4:7] = 1
     # a[2:3,10:13] = 1
     # a[4:7,2:3] = 1
@@ -176,13 +219,12 @@ def initNewGame():
     # a[10:13,14:15] = 1
     # a[14:15,4:7] = 1
     # a[14:15, 10:13] = 1 # Pulsar
-    
-    
+
     # Spaceships
     # a[2:3, 1:2] = 1
     # a[3:4, 2:3] = 1
     # a[1:4, 3:4] = 1 # Glider
-    
+
     # return testGame
     return np.random.randint(0, 2, cell_grid, dtype=np.int8)
 
@@ -215,9 +257,9 @@ def updateIteration(imageFile, dark, increment):
                 break
             headerIteration += char
         currentIteration = int(headerIteration[::-1]) + 1
-    
+
     newHeaderContent = "Current Iteration: {}".format(currentIteration)
-    
+
     try:
         with open(imageFile, 'w', encoding="utf-8") as image:
             image.write(fileContent.replace(headerContent, newHeaderContent))
@@ -228,17 +270,34 @@ def updateIteration(imageFile, dark, increment):
 def main():
     for i, target_image in enumerate(target_images):
         if os.path.exists(target_image):
-            cells, currentImage = initRunningGame(target_image, i)
-            cells = updateGame(cells)
-            image = generateImage(cells, i)
-            if np.array_equal(currentImage, image):
+            try:
+                tracelog("reading game state...")
+                cells, currentImage = initRunningGame(target_image, i)
+                tracelog("updating game cycle...")
+                cells = updateGame(cells)
+                tracelog("generating new image...")
+                image = generateImage(cells, i)
+                if np.array_equal(currentImage, image):
+                    tracelog("game finished, only still-lifes or no lifes")
+                    tracelog("starting over...")
+                    startNewGame(target_image, i)
+                    tracelog("resetting index counter...")
+                    updateIteration(target_iteration_images[i], i, False)
+                else:
+                    tracelog("saving image...")
+                    image.save(target_image)
+                    tracelog("updating index counter...")
+                    updateIteration(target_iteration_images[i], i, True)
+            except Exception as e:
+                tracelog("an error occured:", e)
+                tracelog("restarting...")
                 startNewGame(target_image, i)
+                tracelog("resetting index counter...")
                 updateIteration(target_iteration_images[i], i, False)
-            else:
-                image.save(target_image)
-                updateIteration(target_iteration_images[i], i, True)
         else:
+            tracelog("starting new game...")
             startNewGame(target_image, i)
+            tracelog("resetting index counter...")
             updateIteration(target_iteration_images[i], i, False)
 
 
