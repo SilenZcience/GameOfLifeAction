@@ -2,7 +2,7 @@ name: Update GameOfLife
 
 on:
   schedule:
-    - cron: '0 12 */3 * *'
+    - cron: '0 */1 * * *'
   workflow_dispatch:
 
 env:
