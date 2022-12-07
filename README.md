@@ -159,12 +159,12 @@ the Action will be executed.
 
 <p align="center">
 	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/GameOfLifeDark.png">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/GameOfLifeBright.png">
+		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark.png">
+		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeBright.png">
 	</picture>
 	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/IterationDark.svg">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/IterationBright.svg">
+		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/IterationDark.svg">
+		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/IterationBright.svg">
 	</picture>
 </p>
 

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  PATH_STRUC: 'GameOfLife'
+  PATH_STRUC: 'GameOfLife/images'
   COLOR_DEAD_DARK: '#14132100'
   COLOR_DYING_DARK: '#F7D747FF'
   COLOR_ALIVE_DARK: '#D83A7DFF'
