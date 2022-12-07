@@ -297,7 +297,7 @@ def main():
         else:
             tracelog("starting new game...")
             startNewGame(target_image, i)
-            tracelog("resetting index counter...")
+            tracelog("generating index counter...")
             updateIteration(target_iteration_images[i], i, False)
 
 

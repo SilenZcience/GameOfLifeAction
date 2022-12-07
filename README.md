@@ -132,6 +132,10 @@ jobs:
 ```
 
 Replace the ``<folder>`` with your own folder(-structure).
+<br/>
+You may change the environment variables inside the .yml-file to alternate the colors (RGBA-format),
+or switch the canvas size (in pixels) / grid size (in cell-units).
+> **Note**: Please note that changing the variables whilst a Game-of-Life image already exists might result in an inaccurate game cycle!
 
 ## Usage
 
