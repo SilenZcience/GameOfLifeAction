@@ -75,7 +75,7 @@ Within your ``README.md`` add the following element:
 </p>
 ```
 
-Additionally add a new GithubAction .yml-file to your ``./.github/workflows/``-folder within your repository:
+Additionally add a new ``GameOfLifeAction.yml``-file to your ``./.github/workflows/``-folder within your repository:
 ```console
 name: Update GameOfLife
 
@@ -129,6 +129,16 @@ jobs:
           git add .
           git commit -m "🤖Update GameOfLife"
           git push origin main
+```
+
+Thus the following structure is given:
+```console
+📦Project
+ ┣ 📂.github
+ ┃ ┗ 📂workflows
+ ┃ ┃ ┗ 📜GameOfLifeAction.yml
+ ┣ 📂<folder>
+ ┗ 📜README.md
 ```
 
 Replace the ``<folder>`` with your own folder(-structure).
