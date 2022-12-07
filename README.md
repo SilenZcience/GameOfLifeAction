@@ -47,9 +47,9 @@
 ## About The Project
 
 This Project generates a Game-of-Life image and saves it to a path of your choosing.
-For each additional time, the programm is started, it will read in the image, update its cycle and save it again.
+For each additional time the programm is started, it will read in the image, update its cycle and save it again.
 Furthermore it generates and updates an image, which will show the current iteration the game is in.
-It will do so, for a dark-mode image, aswell as a light-mode image, which will then be displayed accordingly.
+It will do so for a dark-mode image as well as a light-mode image, which will then be displayed accordingly.
 
 ### Made With
 [![Python][MadeWith-Python]](https://www.python.org/)
@@ -149,8 +149,8 @@ or switch the canvas size (in pixels) / grid size (in cell-units).
 
 ## Usage
 
-The Game-of-Life image will be updated each time, you run the GithubAction.
-You can specify the ``on``-tag within your workflow .yml-file to define, when
+The Game-of-Life image will be updated each time you run the GithubAction.
+You can specify the ``on``-tag within your workflow .yml-file to define when
 the Action will be executed.
 <br/>
 [Official Documentation](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on)
