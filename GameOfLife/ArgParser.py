@@ -15,9 +15,9 @@ def parseArgs():
                         help="the colors for dying cells, format: #light,#dark")
     parser.add_argument("-calive", action="store", default="#41B782FF,#D83A7DFF",
                         help="the colors for alive cells, format: #light,#dark")
-    parser.add_argument("-canvas", action="store", default="19,19",
+    parser.add_argument("-canvas", action="store", default="420,1200",
                         help="canvas size in pixel, format: height,width")
-    parser.add_argument("-grid", action="store", default="19,19",
+    parser.add_argument("-grid", action="store", default="84,240",
                         help="grid size in cells, format: vertical,horizontal")
     parser.add_argument("-gif", action="store", default="",
                         help="create a gif of 'gifLength' for a given image with the #light color-palette.")
