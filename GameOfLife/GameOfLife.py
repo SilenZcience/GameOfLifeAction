@@ -28,7 +28,7 @@ def updateGame(cells):
     """Calculate the next cycle of cells, aswell
     as the cycle after that, to flag the cells,
     which are about to die."""
-    nextArray = np.zeros(cell_grid, dtype=np.int8)
+    nextArray = np.zeros(cell_grid, dtype=np.uint8)
 
     for row, col in np.ndindex(cells.shape):
         num_alive = np.sum(cells[row-1:row+2, col-1:col+2]) - cells[row, col]
@@ -48,7 +48,7 @@ def updateGame(cells):
 
 
 def generateImage(cells, dark):
-    newArray = np.zeros([canvas_size[0], canvas_size[1], 4], dtype=np.int8)
+    newArray = np.zeros([canvas_size[0], canvas_size[1], 4], dtype=np.uint8)
 
     for row, col in np.ndindex(cells.shape):
         if cells[row, col] == 0:
@@ -61,14 +61,14 @@ def generateImage(cells, dark):
             newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
                      cell_size[1]:(col+1) * cell_size[1]] = color_dying[dark]
 
-    return Image.fromarray(newArray.astype('uint8'))
+    return Image.fromarray(newArray)
 
 
 def initRunningGame(imageFile, dark):
     image = Image.open(imageFile)
     currentColorArray = np.array(image)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
-    currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.int8)
+    currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.uint8)
 
     for row, col in np.ndindex(currentArray.shape):
         if np.array_equal(currentColorArray[row, col], color_dead[dark]):
@@ -82,7 +82,7 @@ def initRunningGame(imageFile, dark):
 
 
 def initNewGame():
-    return np.random.randint(0, 2, cell_grid, dtype=np.int8)
+    return np.random.randint(0, 2, cell_grid, dtype=np.uint8)
 
 
 def startNewGame(target_image, dark):
