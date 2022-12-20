@@ -64,11 +64,18 @@ def parseArgs():
         gif = os.path.abspath(gif) if gif else ''
         gifLength = getattr(param, "gifLength")
         gifSpeed = getattr(param, "gifSpeed")
-        if gif and (cdead[0][3] != 255 or cdying[0][3] != 255 or calive[0][3] != 255):
-            print("The gif cannot be created with alpha-values.")
-            sys.exit(1)
     except:
         print("The gif parameter expects a PATH to an image")
         sys.exit(1)
+    allowedExt = ['.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF']
+    if gif:
+        if (cdead[0][3] != 255 or cdying[0][3] != 255 or calive[0][3] != 255):
+            print("The gif cannot be created with alpha-values.")
+            sys.exit(1)
+        if not os.path.splitext(gif)[1].upper() in allowedExt:
+            print("The given filetype is not supported!")
+            print("Allowed filetypes are:")
+            print(allowedExt)
+            sys.exit(1)
     
     return (path, cdead, cdying, calive, canvas, grid, gif, gifLength, gifSpeed)
