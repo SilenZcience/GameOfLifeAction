@@ -64,7 +64,7 @@ def parseArgs():
         gif = os.path.abspath(gif) if gif else ''
         gifLength = getattr(param, "gifLength")
         gifSpeed = getattr(param, "gifSpeed")
-        if cdead[0][3] != 255 or cdying[0][3] != 255 or calive[0][3] != 255:
+        if gif and (cdead[0][3] != 255 or cdying[0][3] != 255 or calive[0][3] != 255):
             print("The gif cannot be created with alpha-values.")
             sys.exit(1)
     except:
