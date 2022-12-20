@@ -8,7 +8,7 @@ def tracelog(*args):
     print("TraceLog:", *args)
 
 
-workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid = parseArgs()
+workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
 
 cell_size = [canvas_size[0]/cell_grid[0],
              canvas_size[1]/cell_grid[1]]
@@ -65,8 +65,8 @@ def generateImage(cells, dark):
 
 
 def initRunningGame(imageFile, dark):
-    image = Image.open(imageFile)
-    currentColorArray = np.array(image)
+    image = Image.open(imageFile).convert("RGBA")
+    currentColorArray = np.asarray(image)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
     currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.uint8)
 
@@ -91,7 +91,26 @@ def startNewGame(target_image, dark):
     image.save(target_image)
 
 
+def createGif():
+    images = []
+    cells, currentImage = initRunningGame(gif, 0)
+    images.append(currentImage)
+    for i in range(gifLength):
+        print("Generating image ", i+1, '/', gifLength, sep='')
+        cells[cells > 1] = 1
+        cells = updateGame(cells)
+        images.append(generateImage(cells, 0))
+    images += images[-2:0:-1]
+    print("Saving gif...")
+    images[0].save(gif + '.gif',
+               save_all=True, append_images=images[1:], optimize=False, duration=gifSpeed, loop=0)
+
+
 def main():
+    if gif:
+        createGif()
+        return
+    
     for i, target_image in enumerate(target_images):
         if os.path.exists(target_image):
             try:
