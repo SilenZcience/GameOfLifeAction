@@ -39,7 +39,12 @@ jobs:
           python -m pip install -r ./GameOfLifeAction/GameOfLife/requirements.txt
       - name: Run Script
         run: |
-          python ./GameOfLifeAction/GameOfLife/GameOfLife.py -p "./main/$PATH_STRUC" -cdead $COLOR_DEAD_LIGHT,$COLOR_DEAD_DARK -cdying $COLOR_DYING_LIGHT,$COLOR_DYING_DARK -calive $COLOR_ALIVE_LIGHT,$COLOR_ALIVE_DARK -canvas $CANVAS_HEIGHT,$CANVAS_WIDTH -grid $CELL_AMOUNT_VERTICAL,$CELL_AMOUNT_HORIZONTAL
+          python ./GameOfLifeAction/GameOfLife/GameOfLife.py -p "./main/$PATH_STRUC" \
+          -cdead "$COLOR_DEAD_LIGHT,$COLOR_DEAD_DARK" \
+          -cdying "$COLOR_DYING_LIGHT,$COLOR_DYING_DARK" \
+          -calive "$COLOR_ALIVE_LIGHT,$COLOR_ALIVE_DARK" \
+          -canvas "$CANVAS_HEIGHT,$CANVAS_WIDTH" \
+          -grid "$CELL_AMOUNT_VERTICAL,$CELL_AMOUNT_HORIZONTAL"
       - name: Push
         run: |
           cd ./main/
