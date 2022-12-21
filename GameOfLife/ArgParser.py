@@ -23,7 +23,7 @@ def parseArgs():
                         help="create a gif of 'gifLength' for a given image with the #light color-palette.")
     parser.add_argument("-gifLength", action="store", default=10, type=int,
                         help="set the amount of cycles for the gif-generator.")
-    parser.add_argument("-gifSpeed", action="store", default=75, type=int,
+    parser.add_argument("-gifSpeed", action="store", default=100, type=int,
                         help="set the gif speed(ms) for the gif-generator.")
     
     param = parser.parse_args()
