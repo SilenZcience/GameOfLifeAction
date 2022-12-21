@@ -41,8 +41,11 @@ def parseArgs():
         cdying = getattr(param, "cdying").split(',')
         calive = getattr(param, "calive").split(',')
         cdead = [*[getcolor(c, "RGBA") for c in cdead]]
+        cdead += (cdead if len(cdead) == 1 else [])
         cdying = [*[getcolor(c, "RGBA") for c in cdying]]
+        cdying += (cdying if len(cdying) == 1 else [])
         calive = [*[getcolor(c, "RGBA") for c in calive]]
+        calive += (calive if len(calive) == 1 else [])
     except:
         print("The color parameters must be of the format: #light,#dark")
         print("e.g.: '#FFFEFEFF,#141321FF'")
