@@ -100,7 +100,7 @@ def createGif():
         cells[cells > 1] = 1
         cells = updateGame(cells)
         images.append(generateImage(cells, 0))
-    images += images[-2:0:-1]
+    images += images[-2::-1]
     print("Saving gif...")
     images[0].save(os.path.splitext(gif)[0] + '.gif',
                save_all=True, append_images=images[1:], optimize=False, duration=gifSpeed, loop=0)
