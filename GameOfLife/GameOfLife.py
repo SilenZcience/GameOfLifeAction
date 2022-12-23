@@ -101,10 +101,13 @@ def createGif():
     cells, currentImage = initRunningGame(gif, 0)
     images.append(currentImage)
     cell_gen = updateGame(cells)
-    for i in range(gifLength):
-        print("Generating image ", i+1, '/', gifLength, sep='')
-        cells = next(cell_gen)
-        images.append(generateImage(cells, 0))
+    try:
+        for i in range(gifLength):
+            print("Generating image ", i+1, '/', gifLength, sep='')
+            cells = next(cell_gen)
+            images.append(generateImage(cells, 0))
+    except KeyboardInterrupt:
+        pass
     images += images[-2::-1]
     print("Saving gif...")
     images[0].save(os.path.splitext(gif)[0] + '.gif',
@@ -150,4 +153,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except:
+        pass
