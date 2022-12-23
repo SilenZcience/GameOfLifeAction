@@ -19,7 +19,7 @@ for i, size in enumerate(cell_size):
 
 
 target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
-                 os.path.join(workingDir, 'GameOfLifeDark.png')]
+                os.path.join(workingDir, 'GameOfLifeDark.png')]
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
@@ -28,23 +28,24 @@ def updateGame(cells):
     """Calculate the next cycle of cells, aswell
     as the cycle after that, to flag the cells,
     which are about to die."""
-    nextArray = np.zeros(cell_grid, dtype=np.uint8)
+    while True:
+        nextArray = np.zeros(cell_grid, dtype=np.uint8)
 
-    for row, col in np.ndindex(cells.shape):
-        num_alive = np.sum(cells[row-1:row+2, col-1:col+2]) - cells[row, col]
+        for row, col in np.ndindex(cells.shape):
+            num_alive = np.sum(cells[max(row-1,0):row+2, max(col-1,0):col+2]) - cells[row, col]
 
-        if (cells[row, col] == 1 and 2 <= num_alive <= 3) or (cells[row, col] == 0 and num_alive == 3):
-            nextArray[row, col] = 1
+            if (cells[row, col] == 1 and 2 <= num_alive <= 3) or (cells[row, col] == 0 and num_alive == 3):
+                nextArray[row, col] = 1
 
-    cells = nextArray.copy()
-    for row, col in np.ndindex(nextArray.shape):
-        num_alive = np.sum(
-            nextArray[row-1:row+2, col-1:col+2]) - nextArray[row, col]
+        cells = nextArray.copy()
+        for row, col in np.ndindex(nextArray.shape):
+            num_alive = np.sum(nextArray[max(row-1,0):row+2, max(col-1,0):col+2]) - nextArray[row, col]
 
-        if nextArray[row, col] == 1 and (num_alive < 2 or num_alive > 3):
-            cells[row, col] = 2
+            if nextArray[row, col] == 1 and (num_alive < 2 or num_alive > 3):
+                cells[row, col] = 2
 
-    return cells
+        yield cells
+        cells[cells > 1] = 1
 
 
 def generateImage(cells, dark):
@@ -65,18 +66,22 @@ def generateImage(cells, dark):
 
 
 def initRunningGame(imageFile, dark):
+    global canvas_size
     image = Image.open(imageFile).convert("RGBA")
     currentColorArray = np.asarray(image)
+    if currentColorArray.shape != (canvas_size[0], canvas_size[1], 4):
+        canvas_size = (currentColorArray.shape[0], currentColorArray.shape[1])
+        print("Modified canvas_size:", canvas_size)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
     currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.uint8)
 
     for row, col in np.ndindex(currentArray.shape):
-        if np.array_equal(currentColorArray[row, col], color_dead[dark]):
-            currentArray[row:(row+1), col:(col+1)] = 0
-        elif np.array_equal(currentColorArray[row, col], color_alive[dark]):
-            currentArray[row:(row+1), col:(col+1)] = 1
-        elif np.array_equal(currentColorArray[row, col], color_dying[dark]):
-            currentArray[row:(row+1), col:(col+1)] = 1
+        if not np.array_equal(currentColorArray[row, col], color_dead[dark]):
+            currentArray[row, col] = 1
+        # elif np.array_equal(currentColorArray[row, col], color_alive[dark]):
+        #     currentArray[row, col] = 1
+        # elif np.array_equal(currentColorArray[row, col], color_dying[dark]):
+        #     currentArray[row, col] = 1
 
     return (currentArray, image)
 
@@ -95,10 +100,10 @@ def createGif():
     images = []
     cells, currentImage = initRunningGame(gif, 0)
     images.append(currentImage)
+    cell_gen = updateGame(cells)
     for i in range(gifLength):
         print("Generating image ", i+1, '/', gifLength, sep='')
-        cells[cells > 1] = 1
-        cells = updateGame(cells)
+        cells = next(cell_gen)
         images.append(generateImage(cells, 0))
     images += images[-2::-1]
     print("Saving gif...")
@@ -117,7 +122,7 @@ def main():
                 tracelog("reading game state...")
                 cells, currentImage = initRunningGame(target_image, i)
                 tracelog("updating game cycle...")
-                cells = updateGame(cells)
+                cells = next(updateGame(cells))
                 tracelog("generating new image...")
                 image = generateImage(cells, i)
                 if np.array_equal(currentImage, image):
