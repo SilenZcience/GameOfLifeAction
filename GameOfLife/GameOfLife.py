@@ -108,10 +108,9 @@ def createGif():
             images.append(generateImage(cells, 0))
     except KeyboardInterrupt:
         pass
-    images += images[-2::-1]
     print("Saving gif...")
     images[0].save(os.path.splitext(gif)[0] + '.gif',
-               save_all=True, append_images=images[1:], optimize=False, duration=gifSpeed, loop=0)
+               save_all=True, append_images=images[1:] + images[-2::-1], optimize=False, duration=gifSpeed, loop=0)
 
 
 def main():
