@@ -34,8 +34,7 @@ def updateGame(cells):
         for row, col in np.ndindex(cells.shape):
             num_alive = np.sum(cells[max(row-1,0):row+2, max(col-1,0):col+2]) - cells[row, col]
 
-            if (cells[row, col] == 1 and 2 <= num_alive <= 3) or (cells[row, col] == 0 and num_alive == 3):
-                nextArray[row, col] = 1
+            nextArray[row, col] = int((cells[row, col] and num_alive == 2) or (num_alive == 3))
 
         cells = nextArray.copy()
         for row, col in np.ndindex(nextArray.shape):
@@ -73,15 +72,7 @@ def initRunningGame(imageFile, dark):
         canvas_size = (currentColorArray.shape[0], currentColorArray.shape[1])
         print("Modified canvas_size:", canvas_size)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
-    currentArray = np.zeros([currentColorArray.shape[0], currentColorArray.shape[1]], dtype=np.uint8)
-
-    for row, col in np.ndindex(currentArray.shape):
-        if not np.array_equal(currentColorArray[row, col], color_dead[dark]):
-            currentArray[row, col] = 1
-        # elif np.array_equal(currentColorArray[row, col], color_alive[dark]):
-        #     currentArray[row, col] = 1
-        # elif np.array_equal(currentColorArray[row, col], color_dying[dark]):
-        #     currentArray[row, col] = 1
+    currentArray = (~(currentColorArray == color_dead[dark]).all(-1)).astype(np.uint8)
 
     return (currentArray, image)
 
