@@ -48,19 +48,12 @@ def updateGame(cells):
 
 
 def generateImage(cells, dark):
-    newArray = np.zeros([canvas_size[0], canvas_size[1], 4], dtype=np.uint8)
-
-    for row, col in np.ndindex(cells.shape):
-        if cells[row, col] == 0:
-            newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
-                     cell_size[1]:(col+1) * cell_size[1]] = color_dead[dark]
-        elif cells[row, col] == 1:
-            newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
-                     cell_size[1]:(col+1) * cell_size[1]] = color_alive[dark]
-        elif cells[row, col] == 2:
-            newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
-                     cell_size[1]:(col+1) * cell_size[1]] = color_dying[dark]
-
+    newArray = np.zeros([*cells.shape, 4], dtype=np.uint8)
+    newArray[cells == 0] = color_dead[dark]
+    newArray[cells == 1] = color_alive[dark]
+    newArray[cells == 2] = color_dying[dark]
+    newArray = newArray.repeat(cell_size[0], axis=0).repeat(cell_size[1], axis=1)
+    
     return Image.fromarray(newArray)
 
 
