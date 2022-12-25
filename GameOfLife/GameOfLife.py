@@ -93,19 +93,18 @@ def readGif(filename, asNumpy=True, split=True):
     
     gifImage = Image.open(filename)
     
-    gifImage.seek(0)
-    
     images = []
     nFrames = (gifImage.n_frames//2)+1 if split else gifImage.n_frames
+    
     for n in range(nFrames):
+        gifImage.seek(n)
         image = gifImage.convert("RGBA")
         if asNumpy:
             image = np.asarray(image)
             if len(image.shape) == 0:
                 raise MemoryError("Too little memory to convert PIL image to array!")
         images.append(image)
-        gifImage.seek(n+1)
-
+    
     return images
 
 
