@@ -83,11 +83,12 @@ def startNewGame(target_image, dark):
 def createGif():
     images = []
     cells, currentImage = initRunningGame(gif, 0)
+    print("Generating image ", 1, '/', gifLength, sep='')
     images.append(currentImage)
     cell_gen = updateGame(cells)
     try:
-        for i in range(gifLength):
-            print("Generating image ", i+1, '/', gifLength, sep='')
+        for i in range(gifLength-1):
+            print("Generating image ", i+2, '/', gifLength, sep='')
             cells = next(cell_gen)
             images.append(generateImage(cells, 0))
     except KeyboardInterrupt:
