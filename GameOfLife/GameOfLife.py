@@ -10,14 +10,16 @@ def tracelog(*args):
 
 workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
 
-cell_size = [canvas_size[0]/cell_grid[0],
-             canvas_size[1]/cell_grid[1]]
-for i, size in enumerate(cell_size):
-    if not size.is_integer():
-        cell_size[i] += 1
-    cell_size[i] = int(cell_size[i])
+def defineCellSize():
+    global cell_size
+    cell_size = [canvas_size[0]/cell_grid[0],
+                canvas_size[1]/cell_grid[1]]
+    for i, size in enumerate(cell_size):
+        if not size.is_integer():
+            cell_size[i] += 1
+        cell_size[i] = int(cell_size[i])
 
-
+defineCellSize()
 target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
                 os.path.join(workingDir, 'GameOfLifeDark.png')]
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
@@ -57,17 +59,22 @@ def generateImage(cells, dark):
     return Image.fromarray(newArray)
 
 
-def initRunningGame(imageFile, dark):
+def initConvertGame(image, dark):
     global canvas_size
-    image = Image.open(imageFile).convert("RGBA")
     currentColorArray = np.asarray(image)
-    if currentColorArray.shape != (canvas_size[0], canvas_size[1], 4):
+    if currentColorArray.shape != (*canvas_size, 4):
         canvas_size = (currentColorArray.shape[0], currentColorArray.shape[1])
+        defineCellSize()
         print("Modified canvas_size:", canvas_size)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
     currentArray = (~(currentColorArray == color_dead[dark]).all(-1)).astype(np.uint8)
 
     return (currentArray, image)
+
+
+def initRunningGame(imageFile, dark):
+    image = Image.open(imageFile).convert("RGBA")
+    return initConvertGame(image, dark)
 
 
 def initNewGame():
@@ -80,21 +87,54 @@ def startNewGame(target_image, dark):
     image.save(target_image)
 
 
-def createGif():
+def readGif(filename, asNumpy=True, split=True):
+    if not os.path.isfile(filename):
+        raise IOError('File not found: ' + str(filename))
+    
+    gifImage = Image.open(filename)
+    
+    gifImage.seek(0)
+    
     images = []
-    cells, currentImage = initRunningGame(gif, 0)
-    print("Generating image ", 1, '/', gifLength, sep='')
-    images.append(currentImage)
+    nFrames = (gifImage.n_frames//2)+1 if split else gifImage.n_frames
+    for n in range(nFrames):
+        image = gifImage.convert("RGBA")
+        if asNumpy:
+            image = np.asarray(image)
+            if len(image.shape) == 0:
+                raise MemoryError("Too little memory to convert PIL image to array!")
+        images.append(image)
+        gifImage.seek(n+1)
+
+    return images
+
+
+def createGif():
+    gifSplit = os.path.splitext(gif)
+
+    if (gifSplit[1].upper() == '.GIF'):
+        images = readGif(gif, False)
+        cells, currentImage = initConvertGame(images[-1], 0)
+        global gifLength
+        if gifLength < 0:
+            gifLength = len(images)+1
+    else:
+        images = []
+        cells, currentImage = initRunningGame(gif, 0)
+        print("Generating image ", 1, '/', gifLength, sep='')
+        images.append(currentImage)
+    
+    startFrame = len(images)
     cell_gen = updateGame(cells)
     try:
-        for i in range(gifLength-1):
-            print("Generating image ", i+2, '/', gifLength, sep='')
+        for i in range(startFrame, gifLength):
+            print("Generating image ", i+1, '/', gifLength, sep='')
             cells = next(cell_gen)
             images.append(generateImage(cells, 0))
     except KeyboardInterrupt:
         pass
     print("Saving gif...")
-    images[0].save(os.path.splitext(gif)[0] + '.gif',
+    images[0].save(gifSplit[0] + '.gif',
                save_all=True, append_images=images[1:] + images[-2::-1], optimize=False, duration=gifSpeed, loop=0)
 
 

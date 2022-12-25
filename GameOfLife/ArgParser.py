@@ -70,7 +70,7 @@ def parseArgs():
     except:
         print("The gif parameter expects a PATH to an image")
         sys.exit(1)
-    allowedExt = ['.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF']
+    allowedExt = ['.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF']
     if gif:
         if (cdead[0][3] != 255 or cdying[0][3] != 255 or calive[0][3] != 255):
             print("The gif cannot be created with alpha-values.")
