@@ -67,7 +67,7 @@ def initConvertGame(image, dark):
         defineCellSize()
         print("Modified canvas_size:", canvas_size)
     currentColorArray = currentColorArray[::cell_size[0], ::cell_size[1]]
-    currentArray = (~(currentColorArray == color_dead[dark]).all(-1)).astype(np.uint8)
+    currentArray = (currentColorArray != color_dead[dark]).any(-1).astype(np.uint8)
 
     return (currentArray, image)
 
