@@ -123,8 +123,8 @@ def main():
                     image.save(target_image)
                     tracelog("updating index counter...")
                     updateIteration(target_iteration_images[i], color_alive[i], True)
-            except Exception as e:
-                tracelog("an error occured:", e)
+            except Exception as exception:
+                tracelog("an error occured:", exception)
                 tracelog("restarting...")
                 startNewGame(target_image, i)
                 tracelog("resetting index counter...")
@@ -139,5 +139,7 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except:
+    except Exception as exception:
+        tracelog("an error occured:", exception)
+    except KeyboardInterrupt:
         pass
