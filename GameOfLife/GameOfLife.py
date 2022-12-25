@@ -9,7 +9,8 @@ def tracelog(*args):
 
 
 workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
-
+canvas_size = (20, 20)
+cell_grid = (20, 20)
 cell_size = [canvas_size[0]/cell_grid[0],
              canvas_size[1]/cell_grid[1]]
 for i, size in enumerate(cell_size):
@@ -49,7 +50,7 @@ def updateGame(cells):
 
 def generateImage(cells, dark):
     newArray = np.zeros([canvas_size[0], canvas_size[1], 4], dtype=np.uint8)
-
+    
     for row, col in np.ndindex(cells.shape):
         if cells[row, col] == 0:
             newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
@@ -60,7 +61,7 @@ def generateImage(cells, dark):
         elif cells[row, col] == 2:
             newArray[row * cell_size[0]:(row+1) * cell_size[0], col *
                      cell_size[1]:(col+1) * cell_size[1]] = color_dying[dark]
-
+    print(newArray)
     return Image.fromarray(newArray)
 
 
@@ -77,9 +78,52 @@ def initRunningGame(imageFile, dark):
     return (currentArray, image)
 
 
+# def initNewGame():
+    # return np.random.randint(0, 2, cell_grid, dtype=np.uint8)
 def initNewGame():
-    return np.random.randint(0, 2, cell_grid, dtype=np.uint8)
+    testGame = np.zeros(cell_grid, dtype=np.int8) # Cell Grid should be >= 19x19
 
+    # Still-lifes
+    # testGame[2:4,2:4] = 1 # Block
+
+    # testGame[1:2,2:4] = 1
+    # testGame[2:3,1:2] = 1
+    # testGame[2:3,4:5] = 1
+    # testGame[3:4,2:4] = 1 # Bee-Hive
+
+    # Oscillators
+    # testGame[2:4,2:4] = 1
+    # testGame[3:4,1:2] = 1
+    # testGame[2:3,4:5] = 1 # Toad
+
+    # testGame[2:5,2:3] = 1 # Blinker
+
+    # testGame[1:3,1:3] = 1
+    # testGame[3:5,3:5] = 1 # Beacon
+
+    # testGame[2:3,4:7] = 1
+    # testGame[2:3,10:13] = 1
+    # testGame[4:7,2:3] = 1
+    # testGame[4:7,7:8] = 1
+    # testGame[4:7,9:10] = 1
+    # testGame[4:7,14:15] = 1
+    # testGame[7:8,4:7] = 1
+    # testGame[7:8,10:13] = 1
+    # testGame[9:10,4:7] = 1
+    # testGame[9:10,10:13] = 1
+    # testGame[10:13,2:3] = 1
+    # testGame[10:13,7:8] = 1
+    # testGame[10:13,9:10] = 1
+    # testGame[10:13,14:15] = 1
+    # testGame[14:15,4:7] = 1
+    # testGame[14:15, 10:13] = 1 # Pulsar
+
+    # Spaceships
+    testGame[2:3, 1:2] = 1
+    testGame[3:4, 2:3] = 1
+    testGame[1:4, 3:4] = 1 # Glider
+
+    return testGame
 
 def startNewGame(target_image, dark):
     cells = initNewGame()
