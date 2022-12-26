@@ -1,7 +1,11 @@
 from os.path import exists
 
 
-def IterationImageContent(r, g, b, *args):
+def IterationImageContent(r: int, g: int, b: int, *args) -> str:
+    """
+    Takes values for red, green, blue and returns an html
+    svg image code as string.
+    """
     hexColor = '#{:02x}{:02x}{:02x}'.format(r, g, b)
     IterationImageContent = '''
     <svg fill="none" viewBox="0 0 345 20" width="345px" height="20px"
@@ -43,7 +47,11 @@ def IterationImageContent(r, g, b, *args):
     return IterationImageContent
 
 
-def updateIteration(imageFile, color, increment):
+def updateIteration(imageFile: str, color: tuple, increment: bool) -> None:
+    """
+    updates the iterationCounter 'imageFile', by either resetting or
+    incrementing it.
+    """
     if not exists(imageFile):
         with open(imageFile, 'w', encoding="utf-8") as image:
             image.write(IterationImageContent(*color))

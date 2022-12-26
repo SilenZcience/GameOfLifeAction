@@ -10,7 +10,11 @@ def tracelog(*args):
 
 workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
 
-def defineCellSize():
+def defineCellSize() -> None:
+    """
+    Calculate the cell_size by the given
+    canvas- and grid size.
+    """
     global cell_size
     cell_size = [canvas_size[0]/cell_grid[0],
                 canvas_size[1]/cell_grid[1]]
@@ -26,8 +30,8 @@ target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
 
-def updateGame(cells):
-    """Calculate the next cycle of cells, aswell
+def updateGame(cells: np.ndarray) -> None:
+    """Calculate/Yields the next cycle of cells, aswell
     as the cycle after that, to flag the cells,
     which are about to die."""
     while True:
@@ -49,7 +53,11 @@ def updateGame(cells):
         cells[cells > 1] = 1
 
 
-def generateImage(cells, dark):
+def generateImage(cells: np.ndarray, dark: int) -> Image:
+    """
+    Generate and return a PIL Image from a given cell array.
+    'dark' is either 0 or 1, used as the index for the color-arrays.
+    """
     newArray = np.zeros([*cells.shape, 4], dtype=np.uint8)
     newArray[cells == 0] = color_dead[dark]
     newArray[cells == 1] = color_alive[dark]
@@ -59,7 +67,12 @@ def generateImage(cells, dark):
     return Image.fromarray(newArray)
 
 
-def initConvertGame(image, dark):
+def initConvertGame(image: Image, dark: int) -> tuple:
+    """
+    Takes a PIL Image and the color-index 'dark'.
+    Returns a tuple containing the cell array and the image
+    itself.
+    """
     global canvas_size
     currentColorArray = np.asarray(image)
     if currentColorArray.shape != (*canvas_size, 4):
@@ -72,22 +85,35 @@ def initConvertGame(image, dark):
     return (currentArray, image)
 
 
-def initRunningGame(imageFile, dark):
+def initRunningGame(imageFile: str, dark: int) -> tuple:
+    """
+    Takes an imagePath as String and the 'dark' color-index
+    value.
+    Returns the cell array and the PIL Image as a tuple.
+    """
     image = Image.open(imageFile).convert("RGBA")
     return initConvertGame(image, dark)
 
 
-def initNewGame():
+def initNewGame() -> np.ndarray:
     return np.random.randint(0, 2, cell_grid, dtype=np.uint8)
 
 
-def startNewGame(target_image, dark):
+def startNewGame(target_image: str, dark: int) -> None:
+    """
+    Starts a new Game Of Life Game by saving a random
+    image to the 'target_image' path.
+    """
     cells = initNewGame()
     image = generateImage(cells, dark)
     image.save(target_image)
 
 
-def readGif(filename, asNumpy=True, split=True):
+def readGif(filename: str, asNumpy: bool = True, split: bool = True):
+    """
+    Takes a string-path of a gif-File and returns either the numpy array
+    or the PIL Image array of all frames or half the frames.
+    """
     if not os.path.isfile(filename):
         raise IOError('File not found: ' + str(filename))
     
@@ -108,7 +134,12 @@ def readGif(filename, asNumpy=True, split=True):
     return images
 
 
-def createGif():
+def createGif() -> None:
+    """
+    Reads the -gif Parameter file to an image array,
+    updates the last frame until -gifLength frames is
+    reached, and saves the updated gif.
+    """
     gifSplit = os.path.splitext(gif)
 
     if (gifSplit[1].upper() == '.GIF'):

@@ -3,7 +3,7 @@ import os
 import argparse
 from PIL.ImageColor import getcolor
 
-def parseArgs():
+def parseArgs() -> tuple:
     parser = argparse.ArgumentParser(
         description='Generate a Game-of-Life Image')
 
