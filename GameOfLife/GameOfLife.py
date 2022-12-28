@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from scipy.ndimage import convolve
 from PIL import Image
 from ArgParser import parseArgs
 from IterationUpdater import updateIteration
@@ -7,7 +8,8 @@ from IterationUpdater import updateIteration
 def tracelog(*args):
     print("TraceLog:", *args)
 
-
+kernel = np.ones((3,3), dtype=np.uint8)
+kernel[1,1] = 0
 workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
 
 def defineCellSize() -> None:
@@ -24,8 +26,8 @@ def defineCellSize() -> None:
         cell_size[i] = int(cell_size[i])
 
 defineCellSize()
-target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
-                os.path.join(workingDir, 'GameOfLifeDark.png')]
+target_images = [os.path.join(workingDir, 'GameOfLifeBright.png')]#,
+                #os.path.join(workingDir, 'GameOfLifeDark.png')]
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
@@ -35,19 +37,11 @@ def updateGame(cells: np.ndarray) -> None:
     as the cycle after that, to flag the cells,
     which are about to die."""
     while True:
-        nextArray = np.zeros(cell_grid, dtype=np.uint8)
+        num_alive = convolve(cells, kernel, mode='constant')
+        cells = (((cells) & (num_alive == 2)) | (num_alive == 3)).astype(np.uint8)
 
-        for row, col in np.ndindex(cells.shape):
-            num_alive = np.sum(cells[max(row-1,0):row+2, max(col-1,0):col+2]) - cells[row, col]
-
-            nextArray[row, col] = int((cells[row, col] and num_alive == 2) or (num_alive == 3))
-
-        cells = nextArray.copy()
-        for row, col in np.ndindex(nextArray.shape):
-            num_alive = np.sum(nextArray[max(row-1,0):row+2, max(col-1,0):col+2]) - nextArray[row, col]
-
-            if nextArray[row, col] == 1 and (num_alive < 2 or num_alive > 3):
-                cells[row, col] = 2
+        num_alive = convolve(cells, kernel, mode='constant')
+        cells[(cells == 1) & ((num_alive < 2) | (num_alive > 3))] = 2
 
         yield cells
         cells[cells > 1] = 1
