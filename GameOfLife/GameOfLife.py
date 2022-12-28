@@ -26,8 +26,8 @@ def defineCellSize() -> None:
         cell_size[i] = int(cell_size[i])
 
 defineCellSize()
-target_images = [os.path.join(workingDir, 'GameOfLifeBright.png')]#,
-                #os.path.join(workingDir, 'GameOfLifeDark.png')]
+target_images = [os.path.join(workingDir, 'GameOfLifeBright.png'),
+                os.path.join(workingDir, 'GameOfLifeDark.png')]
 target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
