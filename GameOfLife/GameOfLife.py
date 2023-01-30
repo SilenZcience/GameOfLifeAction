@@ -2,7 +2,7 @@ import os
 import numpy as np
 from scipy.ndimage import convolve
 from PIL import Image
-from ArgParser import parseArgs
+from ArgParser import parseArgs, settings
 from IterationUpdater import updateIteration
 
 def tracelog(*args):
@@ -10,7 +10,19 @@ def tracelog(*args):
 
 kernel = np.ones((3,3), dtype=np.uint8)
 kernel[1,1] = 0
-workingDir, color_dead, color_dying, color_alive, canvas_size, cell_grid, gif, gifLength, gifSpeed = parseArgs()
+
+parseArgs()
+workingDir  = settings.path
+color_dead  = settings.cdead
+color_dying = settings.cdying
+color_alive = settings.calive
+canvas_size = settings.canvas
+cell_grid   = settings.grid
+gif         = settings.gif
+gifLength   = settings.gifLength
+gifSpeed    = settings.gifSpeed
+fromTransition = settings.fromTransition
+toTransition   = settings.toTransition
 
 def defineCellSize() -> None:
     """
@@ -32,7 +44,7 @@ target_iteration_images = [os.path.join(workingDir, 'IterationBright.svg'),
                            os.path.join(workingDir, 'IterationDark.svg')]
 
 
-def updateGame(cells: np.ndarray) -> None:
+def updateGame(cells: np.ndarray) -> np.ndarray:
     """Calculate/Yields the next cycle of cells, aswell
     as the cycle after that, to flag the cells,
     which are about to die."""
@@ -103,7 +115,7 @@ def startNewGame(target_image: str, dark: int) -> None:
     image.save(target_image)
 
 
-def readGif(filename: str, asNumpy: bool = True, split: bool = True):
+def readGif(filename: str, asNumpy: bool = True, split: bool = True) -> list:
     """
     Takes a string-path of a gif-File and returns either the numpy array
     or the PIL Image array of all frames or half the frames.
@@ -158,13 +170,96 @@ def createGif() -> None:
     except KeyboardInterrupt:
         pass
     print("Saving gif...")
+    framePause = max((400//gifSpeed), 0)
+    framePauseImages = []
+    for _ in range(framePause):
+        framePauseImages.append(images[0])
     images[0].save(gifSplit[0] + '.gif',
-               save_all=True, append_images=images[1:] + images[-2::-1], optimize=False, duration=gifSpeed, loop=0)
+               save_all=True, append_images=framePauseImages + images[1:] + images[-2::-1], optimize=False, duration=gifSpeed, loop=0)
+
+
+def generateTransition(cellsFrom: np.ndarray, cellsTo: np.ndarray, probability: int, previousMask: np.ndarray = None) -> np.ndarray:
+    """
+    return a cell-array, that resembles cellsTo with 'probability'% and
+    cellsFrom with 1-'probability'%.
+    """
+    randomModifier = np.random.choice([False, True], size=cellsFrom.shape, p=[0.25, 0.75])
+    previousMask[previousMask] = randomModifier[previousMask]
+    randomMask = np.random.choice([False, True], size=cellsFrom.shape, p=[1-probability, probability])
+    randomMask[previousMask] = True
+    transitionCells = np.copy(cellsFrom)
+    transitionCells[randomMask] = cellsTo[randomMask]
+    return (transitionCells, randomMask)
+
+
+def createTransition() -> None:
+    """
+    Reads the -from and -to parameters to images and gameoflife state arrays.
+    updates the arrays and concatenates then.
+    inserts transition frames between the images.
+    saves the transition to a gif.
+    """
+    gifSplit = os.path.splitext(fromTransition)
+    
+    imagesFrom = []
+    cellsFrom, currentImageFrom = initRunningGame(fromTransition, 0)
+    imagesFrom.append(currentImageFrom)
+    print(imagesFrom)
+    print(fromTransition, toTransition)
+    imagesTo = []
+    cellsTo, currentImageTo = initRunningGame(toTransition, 0)
+    imagesTo.append(currentImageTo)
+    
+    imagesTransition = []
+    
+    frameCountSplit = gifLength//2
+    frameCountTransition = max(5, gifLength//10)
+    
+    cell_gen_from = updateGame(cellsFrom)
+    cell_gen_to = updateGame(cellsTo)
+    try:
+        for i in range(frameCountSplit):
+            print("Generating image (from) ", i+1, '/', gifLength, sep='')
+            cellsFrom = next(cell_gen_from)
+            imagesFrom.append(generateImage(cellsFrom, 0))
+        for i in range(frameCountSplit, gifLength):
+            print("Generating image  (to)  ", i+1, '/', gifLength, sep='')
+            cellsTo = next(cell_gen_to)
+            imagesTo.append(generateImage(cellsTo, 0))
+        randomMask = (cellsFrom == cellsTo)
+        for i in range(1, frameCountTransition+1):
+            probability = i/(frameCountTransition+1)
+            if probability < 0.1:
+                continue
+            elif probability > 0.9:
+                break
+            print("Generating transition   ", i, '/', frameCountTransition, sep='')
+            cellsTransition, randomMask = generateTransition(cellsFrom, cellsTo, i/(frameCountTransition+1), randomMask)
+            imagesTransition.append(generateImage(cellsTransition, 0))
+            # if np.count_nonzero(cellsTransition==cellsTo) > 0.95 * np.multiply(*cellsFrom.shape):
+            #     break
+    except KeyboardInterrupt:
+            pass
+    framePause = max((600//gifSpeed), 0)
+    framePauseFrom, framePauseTo = [], []
+    for _ in range(framePause):
+        framePauseFrom.append(imagesFrom[0])
+        framePauseTo.append(imagesTo[0])
+    print("Saving gif...")
+    imagesFrom[0].save(gifSplit[0] + '-transition.gif',
+               save_all=True,
+               append_images=framePauseFrom + imagesFrom[1:] + imagesTransition + imagesTo[::-1] + framePauseTo + imagesTo[1:] + imagesTransition[::-1] + imagesFrom[:0:-1],
+               optimize=False, duration=gifSpeed, loop=0)    
+        
 
 
 def main():
     if gif:
         createGif()
+        return
+    
+    if fromTransition:
+        createTransition()
         return
     
     for i, target_image in enumerate(target_images):
