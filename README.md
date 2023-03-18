@@ -39,6 +39,9 @@
 			<li><a href="#examples">Examples</a></li>
 			</ul>
 		</li>
+    <li>
+			<a href="#local-usage">Local Usage</a>
+		</li>
 		<li><a href="#license">License</a></li>
 		<li><a href="#contact">Contact</a></li>
 	</ol>
@@ -158,7 +161,7 @@ The Game-of-Life image will be updated each time you run the GithubAction.
 You can specify the ``on``-tag within your workflow .yml-file to define when
 the Action will be executed.
 <br/>
-[Official Documentation](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on)
+[Official Documentation on GithubActions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on)
 
 ### Examples
 
@@ -172,6 +175,28 @@ the Action will be executed.
 		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/IterationBright.svg">
 	</picture>
 </p>
+
+## Local Usage
+
+You may also use the project locally, by running the command:
+```console
+python .\GameOfLife\GameOfLife.py [OPTION]...
+```
+
+| Argument / Option      | Description                                                                 |
+|------------------------|-----------------------------------------------------------------------------|
+| *-h, --help*           | show help message and exit                                                  |
+| *-p PATH, -path PATH*  | specify output folder                                                       |
+| *-cdead CDEAD*         | the colors for dead cells, format: #light,#dark                             |
+| *-cdying CDYING*       | the colors for dying cells, format: #light,#dark                            |
+| *-calive CALIVE*       | the colors for alive cells, format: #light,#dark                            |
+| *-canvas CANVAS*       | canvas size in pixel, format: height,width                                  |
+| *-grid GRID*           | grid size in cells, format: vertical,horizontal                             |
+| *-gif GIF*             | create a gif of 'gifLength' for a given image with the #light color-palette |
+| *-gifLength GIFLENGTH* | set the amount of frames for the gif                                        |
+| *-gifSpeed GIFSPEED*   | set the gif speed in ms                                                     |
+| *-from FROM*           | make a transition from this file                                            |
+| *-to TO*               | make a transition to this file                                              |
 
 ## License
 

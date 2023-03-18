@@ -27,7 +27,7 @@ def parseArgs() -> None:
         description='Generate a Game-of-Life Image')
 
     parser.add_argument("-p", "-path", action="store", default=os.path.abspath(os.path.join(__file__,  '..')),
-                        help="output folder", dest="path")
+                        help="specify output folder", dest="path")
     parser.add_argument("-cdead", action="store", default="#FFFEFEFF,#141321FF",
                         help="the colors for dead cells, format: #light,#dark")
     parser.add_argument("-cdying", action="store", default="#28394AFF,#F7D747FF",
@@ -39,13 +39,13 @@ def parseArgs() -> None:
     parser.add_argument("-grid", action="store", default="84,240",
                         help="grid size in cells, format: vertical,horizontal")
     parser.add_argument("-gif", action="store", default="",
-                        help="create a gif of 'gifLength' for a given image with the #light color-palette.")
+                        help="create a gif of 'gifLength' for a given image with the #light color-palette")
     parser.add_argument("-gifLength", action="store", default=10, type=int,
-                        help="set the amount of cycles for the gif-generator.")
+                        help="set the amount of frames for the gif")
     parser.add_argument("-gifSpeed", action="store", default=100, type=int,
-                        help="set the gif speed(ms) for the gif-generator.")
+                        help="set the gif speed in ms")
     parser.add_argument("-from", action="store", default="", 
-                        help="make a transition from this file.")
+                        help="make a transition from this file")
     parser.add_argument("-to", action="store", default="", 
                         help="make a transition to this file")
     
