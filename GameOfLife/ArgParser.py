@@ -26,7 +26,7 @@ def parseArgs() -> None:
     parser = argparse.ArgumentParser(
         description='Generate a Game-of-Life Image')
 
-    parser.add_argument("-p", "-path", action="store", default=os.path.abspath(os.path.join(__file__,  '..')),
+    parser.add_argument("-p", "-path", action="store", default=os.path.dirname(__file__,),
                         help="specify output folder", dest="path")
     parser.add_argument("-cdead", action="store", default="#FFFEFEFF,#141321FF",
                         help="the colors for dead cells, format: #light,#dark")
@@ -65,11 +65,11 @@ def parseArgs() -> None:
         cdying = getattr(param, "cdying").split(',')
         calive = getattr(param, "calive").split(',')
         settings.cdead = [*[getcolor(c, "RGBA") for c in cdead]]
-        settings.cdead += (cdead if len(cdead) == 1 else [])
+        settings.cdead += (settings.cdead[0] if len(cdead) == 1 else [], )
         settings.cdying = [*[getcolor(c, "RGBA") for c in cdying]]
-        settings.cdying += (cdying if len(cdying) == 1 else [])
+        settings.cdying += (settings.cdying[0] if len(cdying) == 1 else [], )
         settings.calive = [*[getcolor(c, "RGBA") for c in calive]]
-        settings.calive += (calive if len(calive) == 1 else [])
+        settings.calive += (settings.calive[0] if len(calive) == 1 else [], )
     except:
         print("The color parameters must be of the format: #light,#dark")
         print("e.g.: '#FFFEFEFF,#141321FF'")

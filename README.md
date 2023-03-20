@@ -39,8 +39,11 @@
 			<li><a href="#examples">Examples</a></li>
 			</ul>
 		</li>
-    <li>
-			<a href="#local-usage">Local Usage</a>
+    <li><a href="#local-usage">Local Usage</a>
+			<ul>
+      <li><a href="#arguments">Arguments</a></li>
+			<li><a href="#example">Example</a></li>
+			</ul>
 		</li>
 		<li><a href="#license">License</a></li>
 		<li><a href="#contact">Contact</a></li>
@@ -180,23 +183,70 @@ the Action will be executed.
 
 You may also use the project locally, by running the command:
 ```console
+git clone git@github.com:SilenZcience/GameOfLifeAction.git
+cd ./GameOfLifeAction
+```
+```console
 python .\GameOfLife\GameOfLife.py [OPTION]...
 ```
 
-| Argument / Option      | Description                                                                 |
-|------------------------|-----------------------------------------------------------------------------|
-| *-h, --help*           | show help message and exit                                                  |
-| *-p PATH, -path PATH*  | specify output folder                                                       |
-| *-cdead CDEAD*         | the colors for dead cells, format: #light,#dark                             |
-| *-cdying CDYING*       | the colors for dying cells, format: #light,#dark                            |
-| *-calive CALIVE*       | the colors for alive cells, format: #light,#dark                            |
-| *-canvas CANVAS*       | canvas size in pixel, format: height,width                                  |
-| *-grid GRID*           | grid size in cells, format: vertical,horizontal                             |
-| *-gif GIF*             | create a gif of 'gifLength' for a given image with the #light color-palette |
-| *-gifLength GIFLENGTH* | set the amount of frames for the gif                                        |
-| *-gifSpeed GIFSPEED*   | set the gif speed in ms                                                     |
-| *-from FROM*           | make a transition from this file                                            |
-| *-to TO*               | make a transition to this file                                              |
+### Arguments
+
+- `-h, --help`
+  - show help message and exit
+- `-p PATH, --path PATH`
+  - specify output folder
+  - default value: GameOfLife directory containing the executed file
+  - target files: PATH/GameOfLifeBright.png & PATH/GameOfLifeDark.png
+- `-cdead CDEAD`
+  - the colors for dead cells, format: #light,#dark
+  - default value: "#FFFEFEFF,#141321FF"
+  - alpha value is by default "FF", it is not neccessary to specify.
+  - when generating gifs the alpha value has to be "FF"
+  - only specifying #light will result in "#light,#light"
+- `-cdying CDYING`
+  - the colors for dying cells, format: #light,#dark
+  - default value: "#28394AFF,#F7D747FF"
+  - alpha value is by default "FF", it is not neccessary to specify.
+  - when generating gifs the alpha value has to be "FF"
+  - only specifying #light will result in "#light,#light"
+- `-cdead CALIVE`
+  - calive colors for dead cells, format: #light,#dark
+  - default value: "#41B782FF,#D83A7DFF"
+  - alpha value is by default "FF", it is not neccessary to specify.
+  - when generating gifs the alpha value has to be "FF"
+  - only specifying #light will result in "#light,#light"
+- `canvas CANVAS`
+  - canvas size in pixel, format: height,width
+  - default value: "420,1200"
+  - if the taget files already exist, the image shape will be used
+- `-grid GRID`
+  - grid size in cells, format: vertical,horizontal
+  - default value: "84,240"
+  - the cellsize in pixels will be calculated by CANVAS/GRID
+- `-gif GIF`
+  - create a gif of 'gifLength' for a given image with the #light color-palette
+  - expects a filepath as parameter
+  - the gif will append a mirrored version of itself to create an endless loop
+- `-gifLength GIFLENGTH`
+  - set the amount of frames for the gif
+  - default value: 10
+- `-gifSpeed GIFSPEED`
+  - set the gif speed in ms
+  - default value: 100
+- `-from FROM`
+  - make a transition from this file
+
+- `-to TO`
+  - make a transition to this file
+
+### Example
+
+```console
+python .\GameOfLife\GameOfLife.py -gif .\GameOfLife\images\GameOfLife.png -cdead '#0D1117' -calive '#8A939D' -grid "210,600" -gifLength 50
+```
+
+![GameOfLife.gif](https://raw.githubusercontent.com/SilenZcience/GameOfLifeAction/main/GameOfLife/images/GameOfLife.gif "GameOfLife.gif")
 
 ## License
 
