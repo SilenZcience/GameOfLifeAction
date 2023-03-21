@@ -228,6 +228,7 @@ python .\GameOfLife\GameOfLife.py [OPTION]...
   - create a gif of 'gifLength' for a given image with the #light color-palette
   - expects a filepath as parameter
   - the gif will append a mirrored version of itself to create an endless loop
+  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
 - `-gifLength GIFLENGTH`
   - set the amount of frames for the gif
   - default value: 10
@@ -236,9 +237,10 @@ python .\GameOfLife\GameOfLife.py [OPTION]...
   - default value: 100
 - `-from FROM`
   - make a transition from this file
-
+  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
 - `-to TO`
   - make a transition to this file
+  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
 
 ### Example
 
