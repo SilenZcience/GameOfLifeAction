@@ -216,7 +216,7 @@ python .\GameOfLife\GameOfLife.py [OPTION]...
   - alpha value is by default "FF", it is not neccessary to specify.
   - when generating gifs the alpha value has to be "FF"
   - only specifying #light will result in "#light,#light"
-- `canvas CANVAS`
+- `-canvas CANVAS`
   - canvas size in pixel, format: height,width
   - default value: "420,1200"
   - if the taget files already exist, the image shape will be used
