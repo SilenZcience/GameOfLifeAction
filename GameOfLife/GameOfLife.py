@@ -102,7 +102,7 @@ def initRunningGame(imageFile: str, dark: int) -> tuple:
 
 
 def initNewGame() -> np.ndarray:
-    return np.random.randint(0, 2, cell_grid, dtype=np.uint8)
+    return np.random.default_rng().integers(0, 2, cell_grid, dtype=np.uint8)
 
 
 def startNewGame(target_image: str, dark: int) -> None:
@@ -183,9 +183,10 @@ def generateTransition(cellsFrom: np.ndarray, cellsTo: np.ndarray, probability: 
     return a cell-array, that resembles cellsTo with 'probability'% and
     cellsFrom with 1-'probability'%.
     """
-    randomModifier = np.random.choice([False, True], size=cellsFrom.shape, p=[0.25, 0.75])
+    rng = np.random.default_rng()
+    randomModifier = rng.choice([False, True], size=cellsFrom.shape, p=[0.25, 0.75])
     previousMask[previousMask] = randomModifier[previousMask]
-    randomMask = np.random.choice([False, True], size=cellsFrom.shape, p=[1-probability, probability])
+    randomMask = rng.choice([False, True], size=cellsFrom.shape, p=[1-probability, probability])
     randomMask[previousMask] = True
     transitionCells = np.copy(cellsFrom)
     transitionCells[randomMask] = cellsTo[randomMask]

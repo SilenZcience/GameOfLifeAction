@@ -10,8 +10,8 @@ class Settings():
         self.cdead: list = []
         self.cdying: list = []
         self.calive: list = []
-        self.canvas: tuple = None
-        self.grid: tuple = None
+        self.canvas: tuple = (None, None)
+        self.grid: tuple = (None, None)
         self.gif: str = ''
         self.gifLength: int = 0
         self.gifSpeed: int = 0
@@ -75,13 +75,13 @@ def parseArgs() -> None:
         print("e.g.: '#FFFEFEFF,#141321FF'")
         sys.exit(1)
     try:
-        settings.canvas = tuple([int(pix) for pix in getattr(param, "canvas").split(',')])
+        settings.canvas = tuple(int(pix) for pix in getattr(param, "canvas").split(','))
     except:
         print("The canvas parameter must be of the format: height,width")
         print("e.g.: '420,1200'")
         sys.exit(1)
     try:
-        settings.grid = tuple([int(pix) for pix in getattr(param, "grid").split(',')])
+        settings.grid = tuple(int(pix) for pix in getattr(param, "grid").split(','))
     except:
         print("The grid parameter must be of the format: vertical,horizontal")
         print("e.g.: '84,240'")
@@ -97,7 +97,7 @@ def parseArgs() -> None:
         print("The gif parameter expects a PATH to an image")
         sys.exit(1)
     if gif:
-        if not os.path.splitext(settings.gif)[1].upper() in allowedExt:
+        if os.path.splitext(settings.gif)[1].upper() not in allowedExt:
             print("The given filetype is not supported!")
             print("Allowed filetypes are:")
             print(allowedExt)
@@ -120,7 +120,7 @@ def parseArgs() -> None:
         print("The from and to parameters expect PATHs to an image")
         sys.exit(1)
     if fromTransition and toTransition:
-        if not os.path.splitext(settings.fromTransition)[1].upper() in allowedExt or not os.path.splitext(settings.toTransition)[1].upper() in allowedExt:
+        if os.path.splitext(settings.fromTransition)[1].upper() not in allowedExt or os.path.splitext(settings.toTransition)[1].upper() not in allowedExt:
             print("The given filetype is not supported!")
             print("Allowed filetypes are:")
             print(allowedExt)
