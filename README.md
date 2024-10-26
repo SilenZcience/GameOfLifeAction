@@ -210,8 +210,8 @@ python .\GameOfLife\GameOfLife.py [OPTION]...
   - alpha value is by default "FF", it is not neccessary to specify.
   - when generating gifs the alpha value has to be "FF"
   - only specifying #light will result in "#light,#light"
-- `-cdead CALIVE`
-  - calive colors for dead cells, format: #light,#dark
+- `-calive CALIVE`
+  - the colors for alive cells, format: #light,#dark
   - default value: "#41B782FF,#D83A7DFF"
   - alpha value is by default "FF", it is not neccessary to specify.
   - when generating gifs the alpha value has to be "FF"
