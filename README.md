@@ -219,7 +219,7 @@ python .\GameOfLife\GameOfLife.py [OPTION]...
 - `-canvas CANVAS`
   - canvas size in pixel, format: height,width
   - default value: "420,1200"
-  - if the taget files already exist, the image shape will be used
+  - if the target files already exist, the image shape will be used
 - `-grid GRID`
   - grid size in cells, format: vertical,horizontal
   - default value: "84,240"
