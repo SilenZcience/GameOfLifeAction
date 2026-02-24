@@ -1,52 +1,52 @@
 <div id="top"></div>
 
 <p>
-	<img src="https://visitor-badge.laobi.icu/badge?page_id=SilenZcience.GameOfLifeAction" align="right">
+    <img src="https://visitor-badge.laobi.icu/badge?page_id=SilenZcience.GameOfLifeAction" align="right">
 </p>
 
 <br/>
 <div align="center">
-	<h2 align="center">GameOfLifeAction</h2>
-	<p align="center">
-		Github-Action to generate a Game of Life Image in your repository.
-		<br/>
-		<a href="https://github.com/SilenZcience/GameOfLifeAction/blob/main/src/game_of_life_action/">
-			<strong>Explore the code »</strong>
-		</a>
-		<br/>
-		<br/>
-		<a href="https://github.com/SilenZcience/GameOfLifeAction/issues">Report Bug</a>
-		·
-		<a href="https://github.com/SilenZcience/GameOfLifeAction/issues">Request Feature</a>
+    <h2 align="center">GameOfLifeAction</h2>
+    <p align="center">
+        Github-Action to generate a Game of Life Image in your repository.
+        <br/>
+        <a href="https://github.com/SilenZcience/GameOfLifeAction/blob/main/src/game_of_life_action/">
+            <strong>Explore the code »</strong>
+        </a>
+        <br/>
+        <br/>
+        <a href="https://github.com/SilenZcience/GameOfLifeAction/issues">Report Bug</a>
+        ·
+        <a href="https://github.com/SilenZcience/GameOfLifeAction/issues">Request Feature</a>
    </p>
 </div>
 
 
 <details>
-	<summary>Table of Contents</summary>
-	<ol>
-		<li>
-			<a href="#about-the-project">About The Project</a>
-			<ul>
-			<li><a href="#made-with">Made With</a></li>
-			</ul>
-		</li>
-		<li><a href="#getting-started">Getting Started</a></li>
-		<li><a href="#usage">Usage</a>
-			<ul>
-			<li><a href="#action-inputs">Action Inputs</a></li>
-			<li><a href="#examples">Examples</a></li>
-			</ul>
-		</li>
-		<li><a href="#local-usage">Local Usage</a>
-			<ul>
-			<li><a href="#arguments">Arguments</a></li>
-			<li><a href="#example">Example</a></li>
-			</ul>
-		</li>
-		<li><a href="#license">License</a></li>
-		<li><a href="#contact">Contact</a></li>
-	</ol>
+    <summary>Table of Contents</summary>
+    <ol>
+        <li>
+            <a href="#about-the-project">About The Project</a>
+            <ul>
+            <li><a href="#made-with">Made With</a></li>
+            </ul>
+        </li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#usage">Usage</a>
+            <ul>
+            <li><a href="#action-inputs">Action Inputs</a></li>
+            <li><a href="#examples">Examples</a></li>
+            </ul>
+        </li>
+        <li><a href="#local-usage">Local Usage</a>
+            <ul>
+            <li><a href="#arguments">Arguments</a></li>
+            <li><a href="#example">Example</a></li>
+            </ul>
+        </li>
+        <li><a href="#license">License</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ol>
 </details>
 
 ## About The Project
@@ -149,14 +149,14 @@ Supplying a single color (e.g. `-cdead '#FFFEFE'`) uses that color for both ligh
 ### Examples
 
 <p align="center">
-	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark.png">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight.png">
-	</picture>
-	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark_Iteration.svg">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight_Iteration.svg">
-	</picture>
+    <picture>
+        <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark.png">
+        <img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight.png">
+    </picture>
+    <picture>
+        <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark_Iteration.svg">
+        <img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight_Iteration.svg">
+    </picture>
 </p>
 
 ## Local Usage
