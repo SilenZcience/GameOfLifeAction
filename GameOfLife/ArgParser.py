@@ -1,131 +1,47 @@
+from __future__ import annotations
+
 import sys
-import os
-import argparse
-from PIL.ImageColor import getcolor
+from pathlib import Path
+
+repo_root = Path(__file__).resolve().parents[1]
+src_path = repo_root / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+from game_of_life_action.config import ConfigError, Settings, parse_args
+
+_COLOR_ARGS = {"-cdead", "-cdying", "-calive"}
+_default_path = Path(__file__).resolve().parent
 
 
-class Settings():
-    def __init__(self) -> None:
-        self.path: str = ''
-        self.cdead: list = []
-        self.cdying: list = []
-        self.calive: list = []
-        self.canvas: tuple = (None, None)
-        self.grid: tuple = (None, None)
-        self.gif: str = ''
-        self.gifLength: int = 0
-        self.gifSpeed: int = 0
-        self.fromTransition: str = ''
-        self.toTransition: str = ''
+def _split_argv(argv: list[str]) -> tuple[list[str], list[str]]:
+    """Split legacy argv where color args accept '#light,#dark' into two
+    single-color argvs understood by parse_args."""
+    light_argv: list[str] = []
+    dark_argv: list[str] = []
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg in _COLOR_ARGS and i + 1 < len(argv):
+            parts = [p.strip() for p in argv[i + 1].split(",") if p.strip()]
+            light_argv += [arg, parts[0]]
+            dark_argv  += [arg, parts[1] if len(parts) > 1 else parts[0]]
+            i += 2
+        else:
+            light_argv.append(arg)
+            dark_argv.append(arg)
+            i += 1
+    return light_argv, dark_argv
 
 
-settings = Settings()
-
-
-def parseArgs() -> None:
-    parser = argparse.ArgumentParser(
-        description='Generate a Game-of-Life Image')
-
-    parser.add_argument("-p", "-path", action="store", default=os.path.dirname(__file__,),
-                        help="specify output folder", dest="path")
-    parser.add_argument("-cdead", action="store", default="#FFFEFEFF,#141321FF",
-                        help="the colors for dead cells, format: #light,#dark")
-    parser.add_argument("-cdying", action="store", default="#28394AFF,#F7D747FF",
-                        help="the colors for dying cells, format: #light,#dark")
-    parser.add_argument("-calive", action="store", default="#41B782FF,#D83A7DFF",
-                        help="the colors for alive cells, format: #light,#dark")
-    parser.add_argument("-canvas", action="store", default="420,1200",
-                        help="canvas size in pixel, format: height,width")
-    parser.add_argument("-grid", action="store", default="84,240",
-                        help="grid size in cells, format: vertical,horizontal")
-    parser.add_argument("-gif", action="store", default="",
-                        help="create a gif of 'gifLength' for a given image with the #light color-palette")
-    parser.add_argument("-gifLength", action="store", default=10, type=int,
-                        help="set the amount of frames for the gif")
-    parser.add_argument("-gifSpeed", action="store", default=100, type=int,
-                        help="set the gif speed in ms")
-    parser.add_argument("-from", action="store", default="", 
-                        help="make a transition from this file")
-    parser.add_argument("-to", action="store", default="", 
-                        help="make a transition to this file")
-    
-    param = parser.parse_args()
-    print(param)
-    allowedExt = ['.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF']
-    
+def parseArgs() -> tuple[Settings, Settings]:
+    light_argv, dark_argv = _split_argv(sys.argv[1:])
     try:
-        settings.path = os.path.abspath(getattr(param, "path"))
-        if not os.path.exists(settings.path):
-            raise ValueError
-    except:
-        print("Invalid PATH! Please choose an existing folder")
-        sys.exit(1)
-    try:
-        cdead = getattr(param, "cdead").split(',')
-        cdying = getattr(param, "cdying").split(',')
-        calive = getattr(param, "calive").split(',')
-        settings.cdead = [*[getcolor(c, "RGBA") for c in cdead]]
-        settings.cdead += (settings.cdead[0] if len(cdead) == 1 else [], )
-        settings.cdying = [*[getcolor(c, "RGBA") for c in cdying]]
-        settings.cdying += (settings.cdying[0] if len(cdying) == 1 else [], )
-        settings.calive = [*[getcolor(c, "RGBA") for c in calive]]
-        settings.calive += (settings.calive[0] if len(calive) == 1 else [], )
-    except:
-        print("The color parameters must be of the format: #light,#dark")
-        print("e.g.: '#FFFEFEFF,#141321FF'")
-        sys.exit(1)
-    try:
-        settings.canvas = tuple(int(pix) for pix in getattr(param, "canvas").split(','))
-    except:
-        print("The canvas parameter must be of the format: height,width")
-        print("e.g.: '420,1200'")
-        sys.exit(1)
-    try:
-        settings.grid = tuple(int(pix) for pix in getattr(param, "grid").split(','))
-    except:
-        print("The grid parameter must be of the format: vertical,horizontal")
-        print("e.g.: '84,240'")
-        sys.exit(1)
-    try:
-        gif = getattr(param, "gif")
-        settings.gif = os.path.abspath(gif) if gif else ''
-        settings.gifLength = getattr(param, "gifLength")
-        settings.gifSpeed = getattr(param, "gifSpeed")
-        if gif and not os.path.exists(settings.gif):
-            raise ValueError
-    except:
-        print("The gif parameter expects a PATH to an image")
-        sys.exit(1)
-    if gif:
-        if os.path.splitext(settings.gif)[1].upper() not in allowedExt:
-            print("The given filetype is not supported!")
-            print("Allowed filetypes are:")
-            print(allowedExt)
-            sys.exit(1)
-    try:
-        fromTransition = getattr(param, 'from')
-        toTransition = getattr(param, 'to')
-        if bool(fromTransition) != bool(toTransition):
-            raise ValueError
-    except:
-        print("When creating a transition, you need to specify from AND to")
-        sys.exit(1)
-    try:
-        settings.fromTransition = os.path.abspath(fromTransition) if fromTransition else ''
-        settings.toTransition = os.path.abspath(toTransition) if toTransition else ''
-        if fromTransition and toTransition:
-            if not os.path.exists(settings.fromTransition) or not os.path.exists(settings.toTransition):
-                raise ValueError
-    except:
-        print("The from and to parameters expect PATHs to an image")
-        sys.exit(1)
-    if fromTransition and toTransition:
-        if os.path.splitext(settings.fromTransition)[1].upper() not in allowedExt or os.path.splitext(settings.toTransition)[1].upper() not in allowedExt:
-            print("The given filetype is not supported!")
-            print("Allowed filetypes are:")
-            print(allowedExt)
-            sys.exit(1)
-    if gif or (fromTransition and toTransition):
-        if (settings.cdead[0][3] != 255 or settings.cdying[0][3] != 255 or settings.calive[0][3] != 255):
-            print("The gif cannot be created with alpha-values.")
-            sys.exit(1)
+        settings_light = parse_args(light_argv, default_path=_default_path)
+        settings_light.name = "GameOfLifeLight"
+        settings_dark  = parse_args(dark_argv,  default_path=_default_path)
+        settings_dark.name = "GameOfLifeDark"
+    except ConfigError as exc:
+        print(exc)
+        raise SystemExit(2) from exc
+    return settings_light, settings_dark

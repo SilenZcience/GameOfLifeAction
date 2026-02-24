@@ -10,7 +10,7 @@
 	<p align="center">
 		Github-Action to generate a Game of Life Image in your repository.
 		<br/>
-		<a href="https://github.com/SilenZcience/GameOfLifeAction/blob/main/GameOfLife/GameOfLife.py">
+		<a href="https://github.com/SilenZcience/GameOfLifeAction/blob/main/src/game_of_life_action/">
 			<strong>Explore the code »</strong>
 		</a>
 		<br/>
@@ -31,17 +31,16 @@
 			<li><a href="#made-with">Made With</a></li>
 			</ul>
 		</li>
-		<li>
-			<a href="#getting-started">Getting Started</a>
-		</li>
+		<li><a href="#getting-started">Getting Started</a></li>
 		<li><a href="#usage">Usage</a>
 			<ul>
+			<li><a href="#action-inputs">Action Inputs</a></li>
 			<li><a href="#examples">Examples</a></li>
 			</ul>
 		</li>
-    <li><a href="#local-usage">Local Usage</a>
+		<li><a href="#local-usage">Local Usage</a>
 			<ul>
-      <li><a href="#arguments">Arguments</a></li>
+			<li><a href="#arguments">Arguments</a></li>
 			<li><a href="#example">Example</a></li>
 			</ul>
 		</li>
@@ -52,10 +51,10 @@
 
 ## About The Project
 
-This Project generates a Game-of-Life image and saves it to a path of your choosing.
-For each additional time the programm is started, it will read in the image, update its cycle and save it again.
-Furthermore it generates and updates an image, which will show the current iteration the game is in.
-It will do so for a dark-mode image as well as a light-mode image, which will then be displayed accordingly.
+This project generates a Game-of-Life image and saves it to a path of your choosing.
+Each time the action runs it reads the existing image, advances one game cycle, and saves it again.
+It also maintains an iteration counter SVG alongside the image.
+Both a light-mode and a dark-mode image are produced and displayed accordingly.
 
 ### Made With
 [![Python][MadeWith-Python]](https://www.python.org/)
@@ -65,24 +64,26 @@ It will do so for a dark-mode image as well as a light-mode image, which will th
 
 ## Getting Started
 
-Choose a folder(-structure), or create a new one, in which the Game-of-Life images should be stored.
-<br/>
-Within your ``README.md`` add the following element:
-```console
+Choose a folder in which the Game-of-Life images should be stored.
+
+Add the following snippet to your `README.md` to display both color modes:
+
+```html
 <p align="center">
   <picture>
     <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/GameOfLifeDark.png">
-    <img width="98.6%" alt="Game of Life" src="./<folder>/GameOfLifeBright.png">
+    <img width="98.6%" alt="Game of Life" src="./<folder>/GameOfLifeLight.png">
   </picture>
   <picture>
-    <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/IterationDark.svg">
-    <img width="98.6%" alt="Game of Life" src="./<folder>/IterationBright.svg">
+    <source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./<folder>/GameOfLifeDark_Iteration.svg">
+    <img width="98.6%" alt="Game of Life" src="./<folder>/GameOfLifeLight_Iteration.svg">
   </picture>
 </p>
 ```
 
-Additionally add a new ``GameOfLifeAction.yml``-file to your ``./.github/workflows/``-folder within your repository:
-```console
+Add a new `GameOfLifeAction.yml` file to your `.github/workflows/` folder:
+
+```yaml
 name: Update GameOfLife
 
 on:
@@ -90,162 +91,130 @@ on:
     - cron: '0 12 */3 * *'
   workflow_dispatch:
 
-env:
-  PATH_STRUC: '<folder>'
-  COLOR_DEAD_DARK: '#141321FF'
-  COLOR_DYING_DARK: '#F7D747FF'
-  COLOR_ALIVE_DARK: '#D83A7DFF'
-  COLOR_DEAD_LIGHT: '#FFFEFEFF'
-  COLOR_DYING_LIGHT: '#28394AFF'
-  COLOR_ALIVE_LIGHT: '#41B782FF'
-  CANVAS_HEIGHT: '420'
-  CANVAS_WIDTH: '1200'
-  CELL_AMOUNT_VERTICAL: '84'
-  CELL_AMOUNT_HORIZONTAL: '240'
-
 jobs:
-  build:
+  update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: SilenZcience/GameOfLifeAction@main
         with:
-          path: main
-      - name: Checkout GameOfLifeAction - Repo
-        uses: actions/checkout@v3
-        with:
-          repository: SilenZcience/GameOfLifeAction
-          path: GameOfLifeAction
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - name: Setup Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r ./GameOfLifeAction/GameOfLife/requirements.txt
-      - name: Run Script
-        run: |
-          python ./GameOfLifeAction/GameOfLife/GameOfLife.py -p "./main/$PATH_STRUC" \
-          -cdead "$COLOR_DEAD_LIGHT,$COLOR_DEAD_DARK" \
-          -cdying "$COLOR_DYING_LIGHT,$COLOR_DYING_DARK" \
-          -calive "$COLOR_ALIVE_LIGHT,$COLOR_ALIVE_DARK" \
-          -canvas "$CANVAS_HEIGHT,$CANVAS_WIDTH" \
-          -grid "$CELL_AMOUNT_VERTICAL,$CELL_AMOUNT_HORIZONTAL"
-      - name: Push
-        run: |
-          cd ./main/
-          git config --local user.name 'github-actions[bot]'
-          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
-          git add ./$PATH_STRUC/*
-          git commit -m "🤖Update GameOfLife"
-          git push origin main
+          path: <folder>
+          commit: true
 ```
 
-Thus the following structure is given:
-```console
+Replace `<folder>` with your chosen output directory. All other inputs are optional — see [Action Inputs](#action-inputs) below.
+
+The resulting repository structure:
+
+```
 📦Project
  ┣ 📂.github
  ┃ ┗ 📂workflows
  ┃ ┃ ┗ 📜GameOfLifeAction.yml
  ┣ 📂<folder>
+ ┃ ┣ 🖼️GameOfLife.png
+ ┃ ┣ 🖼️GameOfLifeDark.png
+ ┃ ┣ 🖼️GameOfLife_Iteration.svg
+ ┃ ┗ 🖼️GameOfLifeDark_Iteration.svg
  ┗ 📜README.md
 ```
 
-Replace the ``<folder>`` with your own folder(-structure).
-<br/>
-You may change the environment variables inside the .yml-file to alternate the colors (RGBA-format),
-or switch the canvas size (in pixels) / grid size (in cell-units).
-> **Note**: Please note that changing the variables whilst a Game-of-Life image already exists might result in an inaccurate game cycle!
+> **Note**: Changing color or grid settings while images already exist may produce an inaccurate game cycle on the first run.
 
 ## Usage
 
-The Game-of-Life image will be updated each time you run the GithubAction.
-You can specify the ``on``-tag within your workflow .yml-file to define when
-the Action will be executed.
-<br/>
-[Official Documentation on GithubActions](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on)
+The Game-of-Life images are updated each time the action runs. Use the `on` key in your workflow file to control the schedule.
+[Official GitHub Actions documentation](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on)
+
+### Action Inputs
+
+| Input | Description | Default |
+|---|---|---|
+| `path` | Output folder for generated images | `GameOfLife/images` |
+| `cdead` | Dead-cell color(s) as `#light` or `#light,#dark` | `#FFFEFEFF,#141321FF` |
+| `cdying` | Dying-cell color(s) as `#light` or `#light,#dark` | `#28394AFF,#F7D747FF` |
+| `calive` | Alive-cell color(s) as `#light` or `#light,#dark` | `#41B782FF,#D83A7DFF` |
+| `canvas` | Canvas size in pixels as `height,width` | `420,1200` |
+| `grid` | Grid size in cells as `vertical,horizontal` | `84,240` |
+| `python-version` | Python version to use | `3.12` |
+| `commit` | Automatically commit and push generated changes | `false` |
+| `commit-message` | Commit message when `commit` is enabled | `🤖 Update Game of Life` |
+| `git-user-name` | Git author name for the managed commit | `github-actions[bot]` |
+| `git-user-email` | Git author email for the managed commit | `github-actions[bot]@users.noreply.github.com` |
+
+Colors accept RGBA hex values (e.g. `#41B782FF`). The alpha channel defaults to `FF` and may be omitted.
+Supplying a single color (e.g. `-cdead '#FFFEFE'`) uses that color for both light and dark modes.
 
 ### Examples
 
 <p align="center">
 	<picture>
 		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark.png">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeBright.png">
+		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight.png">
 	</picture>
 	<picture>
-		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/IterationDark.svg">
-		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/IterationBright.svg">
+		<source width="98.6%" media="(prefers-color-scheme: dark)" srcset="./GameOfLife/images/GameOfLifeDark_Iteration.svg">
+		<img width="98.6%" alt="Game of Life" src="./GameOfLife/images/GameOfLifeLight_Iteration.svg">
 	</picture>
 </p>
 
 ## Local Usage
 
-You may also use the project locally, by running the command:
+Install the package and run the CLI directly:
+
 ```console
 git clone git@github.com:SilenZcience/GameOfLifeAction.git
-cd ./GameOfLifeAction
+cd GameOfLifeAction
+pip install .
 ```
 ```console
-python .\GameOfLife\GameOfLife.py [OPTION]...
+game-of-life-action [OPTION]...
 ```
 
 ### Arguments
 
 - `-h, --help`
   - show help message and exit
-- `-p PATH, --path PATH`
-  - specify output folder
-  - default value: GameOfLife directory containing the executed file
-  - target files: PATH/GameOfLifeBright.png & PATH/GameOfLifeDark.png
-- `-cdead CDEAD`
-  - the colors for dead cells, format: #light,#dark
-  - default value: "#FFFEFEFF,#141321FF"
-  - alpha value is by default "FF", it is not neccessary to specify.
-  - when generating gifs the alpha value has to be "FF"
-  - only specifying #light will result in "#light,#light"
-- `-cdying CDYING`
-  - the colors for dying cells, format: #light,#dark
-  - default value: "#28394AFF,#F7D747FF"
-  - alpha value is by default "FF", it is not neccessary to specify.
-  - when generating gifs the alpha value has to be "FF"
-  - only specifying #light will result in "#light,#light"
-- `-calive CALIVE`
-  - the colors for alive cells, format: #light,#dark
-  - default value: "#41B782FF,#D83A7DFF"
-  - alpha value is by default "FF", it is not neccessary to specify.
-  - when generating gifs the alpha value has to be "FF"
-  - only specifying #light will result in "#light,#light"
-- `-canvas CANVAS`
-  - canvas size in pixel, format: height,width
-  - default value: "420,1200"
-  - if the target files already exist, the image shape will be used
-- `-grid GRID`
-  - grid size in cells, format: vertical,horizontal
-  - default value: "84,240"
-  - the cellsize in pixels will be calculated by CANVAS/GRID
-- `-gif GIF`
-  - create a gif of 'gifLength' for a given image with the #light color-palette
-  - expects a filepath as parameter
-  - the gif will append a mirrored version of itself to create an endless loop
-  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
-- `-gifLength GIFLENGTH`
-  - set the amount of frames for the gif
-  - default value: 10
-- `-gifSpeed GIFSPEED`
-  - set the gif speed in ms
-  - default value: 100
-- `-from FROM`
-  - make a transition from this file
-  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
-- `-to TO`
-  - make a transition to this file
-  - allowed file types: '.BMP', '.JPEG', '.PNG', '.SPIDER', '.TIFF', '.GIF'
+- `-p PATH`
+  - output folder for the generated image
+  - default: `GameOfLife/` directory next to the package
+- `-name NAME`
+  - base name for the output files (`NAME.png`, `NAME_Iteration.svg`)
+  - default: `GameOfLife`
+- `-cdead COLOR`
+  - color for dead cells (RGBA hex)
+  - default: `#FFFEFEFF`
+- `-cdying COLOR`
+  - color for dying cells (RGBA hex)
+  - default: `#28394AFF`
+- `-calive COLOR`
+  - color for alive cells (RGBA hex)
+  - default: `#41B782FF`
+- `-canvas HEIGHT,WIDTH`
+  - canvas size in pixels
+  - default: `420,1200`
+  - if the target image already exists its dimensions are used
+- `-grid VERTICAL,HORIZONTAL`
+  - grid size in cells; cell pixel size is derived from `CANVAS/GRID`
+  - default: `84,240`
+- `-gif FILE`
+  - generate a gif from the given image file
+  - the gif appends a mirrored copy of itself for a seamless loop
+  - allowed types: `.BMP`, `.JPEG`, `.PNG`, `.SPIDER`, `.TIFF`, `.GIF`
+- `-gifLength N`
+  - number of frames in the gif (default: `10`)
+- `-gifSpeed MS`
+  - frame duration in milliseconds (default: `100`)
+- `-from FILE`
+  - source image for a transition gif
+- `-to FILE`
+  - target image for a transition gif
 
 ### Example
 
 ```console
-python .\GameOfLife\GameOfLife.py -gif .\GameOfLife\images\GameOfLife.png -cdead '#0D1117' -calive '#8A939D' -grid "210,600" -gifLength 50
+game-of-life-action -gif .\GameOfLife\images\GameOfLife.png -cdead '#0D1117' -calive '#8A939D' -grid "210,600" -gifLength 50
 ```
 
 ![GameOfLife.gif](https://raw.githubusercontent.com/SilenZcience/GameOfLifeAction/main/GameOfLife/images/GameOfLife.gif "GameOfLife.gif")

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "game-of-life-action"
+version = "1.0.0"
+description = "Generate and evolve Game of Life images for GitHub repositories"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "SilenZcience" }]
+dependencies = [
+  "numpy>=1.23.4",
+  "Pillow>=9.3.0",
+  "scipy>=1.8.0",
+]
+
+[project.scripts]
+game-of-life-action = "game_of_life_action.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,110 @@
+name: "Game Of Life Action"
+description: "Generate and evolve Game of Life images in your repository"
+author: "SilenZcience"
+
+inputs:
+  path:
+    description: "Output folder for generated images"
+    required: false
+    default: "GameOfLife/images"
+  cdead:
+    description: "Dead cell colors as #light,#dark"
+    required: false
+    default: "#FFFEFEFF,#141321FF"
+  cdying:
+    description: "Dying cell colors as #light,#dark"
+    required: false
+    default: "#28394AFF,#F7D747FF"
+  calive:
+    description: "Alive cell colors as #light,#dark"
+    required: false
+    default: "#41B782FF,#D83A7DFF"
+  canvas:
+    description: "Canvas size as height,width"
+    required: false
+    default: "420,1200"
+  grid:
+    description: "Grid size as vertical,horizontal"
+    required: false
+    default: "84,240"
+
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.12"
+
+  commit:
+    description: "Automatically commit and push generated changes"
+    required: false
+    default: "false"
+  commit-message:
+    description: "Commit message used when commit is enabled"
+    required: false
+    default: "🤖 Update Game of Life"
+  git-user-name:
+    description: "Git author name used for managed commit"
+    required: false
+    default: "github-actions[bot]"
+  git-user-email:
+    description: "Git author email used for managed commit"
+    required: false
+    default: "github-actions[bot]@users.noreply.github.com"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install "${{ github.action_path }}"
+
+    - name: Run generator (light + dark)
+      shell: bash
+      run: |
+        IFS=',' read -r cdead_light  cdead_dark  <<< "${{ inputs.cdead }}"
+        IFS=',' read -r cdying_light cdying_dark <<< "${{ inputs.cdying }}"
+        IFS=',' read -r calive_light calive_dark <<< "${{ inputs.calive }}"
+        cdead_dark="${cdead_dark:-$cdead_light}"
+        cdying_dark="${cdying_dark:-$cdying_light}"
+        calive_dark="${calive_dark:-$calive_light}"
+
+        game-of-life-action \
+          -p "${{ inputs.path }}" \
+          -cdead "$cdead_light" -cdying "$cdying_light" -calive "$calive_light" \
+          -canvas "${{ inputs.canvas }}" -grid "${{ inputs.grid }}" \
+          -name "GameOfLifeLight"
+
+        game-of-life-action \
+          -p "${{ inputs.path }}" \
+          -cdead "$cdead_dark" -cdying "$cdying_dark" -calive "$calive_dark" \
+          -canvas "${{ inputs.canvas }}" -grid "${{ inputs.grid }}" \
+          -name "GameOfLifeDark"
+
+    - name: Managed commit and push
+      if: ${{ inputs.commit == 'true' }}
+      shell: bash
+      run: |
+        git config --local user.name "${{ inputs.git-user-name }}"
+        git config --local user.email "${{ inputs.git-user-email }}"
+        git add --all -- "${{ inputs.path }}"
+
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+
+        git commit -m "${{ inputs.commit-message }}"
+        git push
+
+branding:
+  icon: "activity"
+  color: "purple"
