@@ -134,6 +134,7 @@ runs:
         fi
 
         git commit -m "${{ inputs.commit-message }}"
+        git pull --rebase
         git push
 
 branding:
