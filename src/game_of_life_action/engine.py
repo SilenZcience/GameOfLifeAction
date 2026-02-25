@@ -177,7 +177,8 @@ class GameOfLifeEngine:
         source_pixels = np.asarray(image).copy()
         if source_pixels.shape != (*self.canvas_size, 4):
             self.canvas_size = (source_pixels.shape[0], source_pixels.shape[1])
-            self.cell_grid = (source_pixels.shape[0], source_pixels.shape[1])
+            if not self.settings.grid_explicit:
+                self.cell_grid = (source_pixels.shape[0], source_pixels.shape[1])
             self.cell_size = self._define_cell_size()
             tracelog("Modified canvas_size:", self.canvas_size)
 

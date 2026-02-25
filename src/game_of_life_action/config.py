@@ -29,6 +29,7 @@ class Settings:
     to_transition: Path | None
     name: str = field(default="GameOfLife")
     auto_colors: bool = field(default=False)
+    grid_explicit: bool = field(default=False)
 
 
 class ConfigError(ValueError):
@@ -93,7 +94,7 @@ def parse_args(argv: Sequence[str] | None = None, *, default_path: Path) -> Sett
     parser.add_argument("-cdying", default=None)
     parser.add_argument("-calive", default=None)
     parser.add_argument("-canvas", default="420,1200")
-    parser.add_argument("-grid", default="84,240")
+    parser.add_argument("-grid", default=None)
     parser.add_argument("-gif", default="")
     parser.add_argument("-gifLength", default=10, type=int)
     parser.add_argument("-gifSpeed", default=100, type=int)
@@ -111,7 +112,8 @@ def parse_args(argv: Sequence[str] | None = None, *, default_path: Path) -> Sett
     cdying = _parse_color(param.cdying, "-cdying") if param.cdying else (40,  57,  74,  255)
     calive = _parse_color(param.calive, "-calive") if param.calive else (65,  183, 130, 255)
     canvas = _parse_int_pair(param.canvas, "-canvas")
-    grid = _parse_int_pair(param.grid, "-grid")
+    grid_explicit = param.grid is not None
+    grid = _parse_int_pair(param.grid if grid_explicit else "84,240", "-grid")
 
     gif_raw = param.gif
     gif: Path | None = None
@@ -163,4 +165,5 @@ def parse_args(argv: Sequence[str] | None = None, *, default_path: Path) -> Sett
         to_transition=to_transition,
         name=param.name,
         auto_colors=auto_colors,
+        grid_explicit=grid_explicit,
     )

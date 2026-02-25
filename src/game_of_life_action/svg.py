@@ -309,6 +309,9 @@ def svg_to_png(source: Path | str, out: Path) -> None:
 
             scale = max(1, current_size_ratio)
             margin = 4 + current_size_ratio
+            print(f"SVG size: {metrics['width']}x{metrics['height']} at DPR {metrics['dpr']}")
+            print(f"Using scale {scale} ({metrics['width']*scale}x{metrics['height']*scale}) with margin {margin} ({metrics['width']*scale-2*margin}x{metrics['height']*scale-2*margin} final)")
+
 
             # Capture screenshot clipped to SVG bounds (CSS pixels)
             screenshot = _cdp_call(sock, cmd_id, "Page.captureScreenshot", {
