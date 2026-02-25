@@ -1,4 +1,4 @@
-name: Update GameOfLifeGif - Proof of Concept
+name: Update GameOfLife GIFs
 
 on:
   workflow_dispatch:
@@ -9,12 +9,17 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
-      - uses: SilenZcience/GameOfLifeAction@v1
+      - name: GithubContributorStatsDarkGif
+        uses: SilenZcience/GameOfLifeAction@v1
         with:
-          gif-name: GithubStreakStatsDarkGif
+          grid: '267,489'
+          gif-name: GithubContributorStatsDarkGif
           do-gif: 'true'
-          gif-file: 'https://streak-stats.demolab.com/?user=SilenZcience&theme=radical&hide_border=true#gh-dark-mode-only'
-          gif-length: '250'
+          gif-file: 'https://github-contributor-stats.vercel.app/api?username=SilenZcience&limit=5&theme=radical&combine_all_yearly_contributions=true&hide_border=true&token=${{ secrets.STATS_TOKEN }}#gh-dark-mode-only'
+          gif-length: '500'
           commit: 'true'
+          commit-message: "🤖 Update GithubContributorStatsDarkGif"
