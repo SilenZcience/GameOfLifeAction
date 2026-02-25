@@ -10,6 +10,7 @@ jobs:
       - name: Run local action
         uses: SilenZcience/GameOfLifeAction@main
         with:
+          name: GithubStreakStatsDarkGif
           do-gif: 'true'
           gif-file: 'https://streak-stats.demolab.com/?user=SilenZcience&theme=radical&hide_border=true#gh-dark-mode-only'
           gif-length: '250'

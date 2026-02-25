@@ -214,7 +214,7 @@ _READY_JS = "document.readyState"
 # Public API
 # ---------------------------------------------------------------------------
 
-def svg_to_png(source: Path | str, out: Path, scale: int = 1) -> None:
+def svg_to_png(source: Path | str, out: Path) -> None:
     """Convert an SVG *source* (local file path or HTTP/S URL) to a PNG at *out*.
 
     Uses a headless Chrome subprocess driven via its DevTools Protocol over a
@@ -240,7 +240,7 @@ def svg_to_png(source: Path | str, out: Path, scale: int = 1) -> None:
             "--hide-scrollbars",
             "--no-sandbox",
             "--allow-file-access-from-files",
-            f"--force-device-scale-factor={scale}",
+            "--force-device-scale-factor=1",
             "--window-size=1920,1080",
             f"--remote-debugging-port={port}",
             "about:blank",
@@ -298,6 +298,18 @@ def svg_to_png(source: Path | str, out: Path, scale: int = 1) -> None:
             })
             metrics = json.loads(metrics_result["result"]["value"])
 
+            # Auto-scale:
+            current_size_ratio = 0
+            metrics_width = metrics['width']
+            metrics_height = metrics['height']
+            while metrics_width * metrics_height < 500_000:
+                current_size_ratio += 1
+                metrics_width *= 2
+                metrics_height *= 2
+
+            scale = max(1, current_size_ratio)
+            margin = 4 + current_size_ratio
+
             # Capture screenshot clipped to SVG bounds (CSS pixels)
             screenshot = _cdp_call(sock, cmd_id, "Page.captureScreenshot", {
                 "format": "png",
@@ -306,7 +318,7 @@ def svg_to_png(source: Path | str, out: Path, scale: int = 1) -> None:
                     "y": metrics["y"],
                     "width": metrics["width"],
                     "height": metrics["height"],
-                    "scale": 1,
+                    "scale": scale,
                 },
             })
         finally:
@@ -317,7 +329,7 @@ def svg_to_png(source: Path | str, out: Path, scale: int = 1) -> None:
         exact_h = int(metrics["height"]) * scale
         if img.size != (exact_w, exact_h):
             img = img.resize((exact_w, exact_h), Image.Resampling.LANCZOS)
-        img = img.crop((4, 4, img.width - 4, img.height - 4))
+        img = img.crop((margin, margin, img.width - margin, img.height - margin))
         img.save(str(out), format="PNG")
 
     finally:
