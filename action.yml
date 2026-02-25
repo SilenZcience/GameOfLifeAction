@@ -117,6 +117,7 @@ runs:
       run: |
         game-of-life-action \
           -p "${{ inputs.path }}" \
+          -grid "${{ inputs.grid }}" \
           -gif "${{ inputs.gif-file }}" -gifLength "${{ inputs.gif-length }}" -gifSpeed "${{ inputs.gif-speed }}" \
           -name "${{ inputs.gif-name }}"
 
