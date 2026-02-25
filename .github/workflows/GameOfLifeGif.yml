@@ -20,6 +20,6 @@ jobs:
           gif-name: GithubContributorStatsDarkGif
           do-gif: 'true'
           gif-file: 'https://github-contributor-stats.vercel.app/api?username=SilenZcience&limit=5&theme=radical&combine_all_yearly_contributions=true&hide_border=true&token=${{ secrets.STATS_TOKEN }}#gh-dark-mode-only'
-          gif-length: '500'
+          gif-length: '5'
           commit: 'true'
           commit-message: "🤖 Update GithubContributorStatsDarkGif"
