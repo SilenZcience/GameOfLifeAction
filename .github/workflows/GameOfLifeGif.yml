@@ -11,8 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Run local action
-        uses: SilenZcience/GameOfLifeAction@main
+      - uses: SilenZcience/GameOfLifeAction@v1
         with:
           gif-name: GithubStreakStatsDarkGif
           do-gif: 'true'

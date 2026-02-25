@@ -94,10 +94,8 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: SilenZcience/GameOfLifeAction@main
+      - uses: SilenZcience/GameOfLifeAction@v1
         with:
           path: <folder>
           commit: true
@@ -232,3 +230,15 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 [MadeWith-Numpy]: https://img.shields.io/badge/Made%20with-Numpy-brightgreen
 
 [GitHub-SilenZcience]: https://img.shields.io/badge/GitHub-SilenZcience-orange
+
+
+<!--
+Note:
+git tag v1
+git push origin v1
+
+update Tag:
+git tag -f v1
+git push origin v1 --force
+
+-->
