@@ -1,4 +1,4 @@
-name: Update GameOfLife
+name: Update GameOfLifeGif
 
 on:
   workflow_dispatch:

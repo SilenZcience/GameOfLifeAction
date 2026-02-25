@@ -112,13 +112,13 @@ runs:
           -name "GameOfLifeDark"
 
     - name: Generate GIF (light + dark)
-      if: ${{ inputs.gif == 'true' }}
+      if: ${{ inputs.do-gif == 'true' }}
       shell: bash
       run: |
         game-of-life-action \
           -p "${{ inputs.path }}" \
           -gif "${{ inputs.gif-file }}" -gifLength "${{ inputs.gif-length }}" -gifSpeed "${{ inputs.gif-speed }}" \
-          -name "{{ inputs.gif-name }}"
+          -name "${{ inputs.gif-name }}"
 
     - name: Managed commit and push
       if: ${{ inputs.commit == 'true' }}
