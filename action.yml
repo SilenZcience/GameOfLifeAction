@@ -28,6 +28,27 @@ inputs:
     required: false
     default: "84,240"
 
+  do-gif:
+    description: "Generate an animated GIF instead of advancing one game cycle"
+    required: false
+    default: "false"
+  gif-file:
+    description: "Source image file passed to -gif"
+    required: false
+    default: ""
+  gif-length:
+    description: "Number of frames to include in the GIF"
+    required: false
+    default: "10"
+  gif-speed:
+    description: "Duration of each GIF frame in milliseconds"
+    required: false
+    default: "100"
+  gif-name:
+    description: "Base name for generated GIF file(s) (without extension)"
+    required: false
+    default: "GameOfLife"
+
   python-version:
     description: "Python version to use"
     required: false
@@ -68,6 +89,7 @@ runs:
         python -m pip install "${{ github.action_path }}"
 
     - name: Run generator (light + dark)
+      if: ${{ inputs.do-gif != 'true' }}
       shell: bash
       run: |
         IFS=',' read -r cdead_light  cdead_dark  <<< "${{ inputs.cdead }}"
@@ -88,6 +110,15 @@ runs:
           -cdead "$cdead_dark" -cdying "$cdying_dark" -calive "$calive_dark" \
           -canvas "${{ inputs.canvas }}" -grid "${{ inputs.grid }}" \
           -name "GameOfLifeDark"
+
+    - name: Generate GIF (light + dark)
+      if: ${{ inputs.gif == 'true' }}
+      shell: bash
+      run: |
+        game-of-life-action \
+          -p "${{ inputs.path }}" \
+          -gif "${{ inputs.gif-file }}" -gifLength "${{ inputs.gif-length }}" -gifSpeed "${{ inputs.gif-speed }}" \
+          -name "{{ inputs.gif-name }}"
 
     - name: Managed commit and push
       if: ${{ inputs.commit == 'true' }}
