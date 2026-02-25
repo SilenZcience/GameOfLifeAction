@@ -302,11 +302,13 @@ def svg_to_png(source: Path | str, out: Path) -> None:
             current_size_ratio = 0
             metrics_width = metrics['width']
             metrics_height = metrics['height']
-            while metrics_width * metrics_height < 500_000:
+            while metrics_width * metrics_height < 555_000:
                 current_size_ratio += 1
-                metrics_width *= 2
-                metrics_height *= 2
-
+                metrics_width += metrics['width']
+                metrics_height += metrics['height']
+            print(f"current_size_ratio: {current_size_ratio}")
+            # if not current_size_ratio and (metrics['width'] % 2 or metrics['height'] % 2):
+            #     current_size_ratio = 2  # Avoid odd sizes which can cause cropping issues
             scale = max(1, current_size_ratio)
             margin = 4 + current_size_ratio
             print(f"SVG size: {metrics['width']}x{metrics['height']} at DPR {metrics['dpr']}")
@@ -332,7 +334,7 @@ def svg_to_png(source: Path | str, out: Path) -> None:
         exact_h = int(metrics["height"]) * scale
         if img.size != (exact_w, exact_h):
             img = img.resize((exact_w, exact_h), Image.Resampling.LANCZOS)
-        img = img.crop((margin, margin, img.width - margin, img.height - margin))
+        img = img.crop((margin, margin, img.width - margin - (img.width % 2), img.height - margin - (img.height % 2)))
         img.save(str(out), format="PNG")
 
     finally:
