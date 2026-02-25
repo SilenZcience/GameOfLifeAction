@@ -195,10 +195,7 @@ class GameOfLifeEngine:
     def init_running_game(
         self, image_file: Path
     ) -> tuple[np.ndarray, Image.Image, np.ndarray, np.ndarray]:
-        raw = Image.open(image_file).convert("RGBA")
-        background = Image.new("RGBA", raw.size, (255, 255, 255, 255))
-        background.paste(raw, mask=raw.split()[3])
-        image = background.convert("RGBA")
+        image = Image.open(image_file).convert("RGBA")
         return self.init_convert_game(image)
 
     def init_new_game(self) -> np.ndarray:
