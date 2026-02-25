@@ -3,6 +3,10 @@ name: Update GameOfLife
 on:
   workflow_dispatch:
 
+concurrency:
+  group: gameoflife-push
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest

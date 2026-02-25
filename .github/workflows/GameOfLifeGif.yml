@@ -1,7 +1,11 @@
-name: Update GameOfLifeGif
+name: Update GameOfLifeGif - Proof of Concept
 
 on:
   workflow_dispatch:
+
+concurrency:
+  group: gameoflife-push
+  cancel-in-progress: false
 
 jobs:
   build:
