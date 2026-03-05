@@ -249,11 +249,17 @@ def svg_to_png(source: Path | str, out: Path) -> None:
         stderr=subprocess.DEVNULL,
     )
 
+    # Give Chrome a moment to fail fast (e.g. bad binary, missing libs)
+    time.sleep(0.3)
+    rc = proc.poll()
+    if rc is not None:
+        raise RuntimeError(f"Chrome process exited immediately with code {rc}. Binary: {chrome!r}")
+
     try:
         # Wait for Chrome's DevTools HTTP endpoint
         ws_path: str | None = None
         for _ in range(40):
-            time.sleep(0.25)
+            time.sleep(0.4)
             try:
                 with urllib.request.urlopen(f"http://127.0.0.1:{port}/json") as resp:
                     targets = json.loads(resp.read())
@@ -291,12 +297,24 @@ def svg_to_png(source: Path | str, out: Path) -> None:
             _cdp_call(sock, cmd_id, "Runtime.evaluate", {"expression": _ANIMATION_JS})
             time.sleep(0.1)
 
-            # Get SVG bounding box
-            metrics_result = _cdp_call(sock, cmd_id, "Runtime.evaluate", {
-                "expression": _METRICS_JS,
-                "returnByValue": True,
-            })
-            metrics = json.loads(metrics_result["result"]["value"])
+            # Get SVG bounding box — retry until the SVG element is present
+            metrics: dict | None = None
+            for _ in range(20):
+                metrics_result = _cdp_call(sock, cmd_id, "Runtime.evaluate", {
+                    "expression": _METRICS_JS,
+                    "returnByValue": True,
+                })
+                if "exceptionDetails" in metrics_result:
+                    time.sleep(0.2)
+                    continue
+                raw = metrics_result.get("result", {}).get("value")
+                if raw is None:
+                    time.sleep(0.2)
+                    continue
+                metrics = json.loads(raw)
+                break
+            if metrics is None:
+                raise RuntimeError("SVG element not found or metrics JS failed after retries")
 
             # Auto-scale:
             current_size_ratio = 0
